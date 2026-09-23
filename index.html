@@ -55,7 +55,7 @@
                     <i class="fas fa-file-invoice-dollar text-xs"></i>
                     <span>Bilan du Jour</span>
                 </button>
-                <button id="btn-logout" onclick="logout()" class="hidden px-3 py-2 rounded-xl text-red-400 hover:bg-red-500/10 transition font-bold text-xs uppercase tracking-wider ml-1" title="DÃ©connexion SecrÃ©tariat">
+                <button id="btn-logout" onclick="logout()" class="hidden px-3 py-2 rounded-xl text-red-400 hover:bg-red-500/10 transition font-bold text-xs uppercase tracking-wider ml-1" title="Déconnexion Secrétariat">
                     <i class="fas fa-power-off"></i>
                 </button>
             </div>
@@ -73,8 +73,8 @@
                     <div class="w-20 h-20 bg-gradient-to-tr from-slate-900 to-blue-900 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-950/20 text-2xl">
                         <i class="fas fa-shield-halved"></i>
                     </div>
-                    <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Espace SÃ©curisÃ©</h2>
-                    <p class="text-xs font-semibold text-slate-500 mt-2 mb-8">Veuillez saisir le code d'accÃ¨s de la Direction pour continuer.</p>
+                    <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Espace Sécurisé</h2>
+                    <p class="text-xs font-semibold text-slate-500 mt-2 mb-8">Veuillez saisir le code d'accès de la Direction pour continuer.</p>
                     
                     <form onsubmit="verifierMotDePasse(event)" class="space-y-4">
                         <div class="relative">
@@ -85,7 +85,7 @@
                         </div>
                         <p id="auth-error" class="hidden text-xs font-bold text-red-500 bg-red-50 py-2 rounded-xl border border-red-100"><i class="fas fa-exclamation-circle mr-1"></i> Mot de passe incorrect !</p>
                         <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-2xl shadow-xl shadow-slate-900/20 transition-all uppercase tracking-wider text-xs">
-                            DÃ©verrouiller l'Espace
+                            Déverrouiller l'Espace
                         </button>
                     </form>
                 </div>
@@ -103,19 +103,19 @@
                             <i class="fas fa-sack-dollar"></i>
                         </div>
                         <div class="flex justify-between items-center mb-6">
-                            <span class="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-[10px] font-black tracking-widest text-blue-300 uppercase">BarÃ¨me Dynamique</span>
+                            <span class="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-[10px] font-black tracking-widest text-blue-300 uppercase">Barème Dynamique</span>
                             <span id="p-jour-label" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--/--/----</span>
                         </div>
-                        <p class="text-xs font-bold uppercase text-slate-400 tracking-wider">Main d'Åuvre EstimÃ©e (Session)</p>
+                        <p class="text-xs font-bold uppercase text-slate-400 tracking-wider">Main d'œuvre Estimée (Session)</p>
                         <h2 id="p-gains-live" class="text-5xl font-black mt-2 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-200">0 FCFA</h2>
                         
                         <div class="mt-8 pt-6 border-t border-slate-800 grid grid-cols-2 gap-4 text-xs">
                             <div>
-                                <p class="text-slate-400 text-[10px] uppercase font-bold">Rendement ThÃ©orique</p>
+                                <p class="text-slate-400 text-[10px] uppercase font-bold">Rendement Théorique</p>
                                 <p id="p-rendement-theo" class="font-black text-slate-200 text-sm mt-0.5">0 palettes</p>
                             </div>
                             <div>
-                                <p class="text-slate-400 text-[10px] uppercase font-bold">Net Intact AjoutÃ© au Stock</p>
+                                <p class="text-slate-400 text-[10px] uppercase font-bold">Net Intact Ajouté au Stock</p>
                                 <p id="p-total-parpaings" class="font-black text-blue-400 text-sm mt-0.5">0 blocs</p>
                             </div>
                         </div>
@@ -124,7 +124,7 @@
                     <!-- GUIDES & REGLES -->
                     <div class="glass-panel p-6 rounded-3xl shadow-lg space-y-3">
                         <h4 class="font-black text-xs uppercase tracking-wider text-slate-500 flex items-center">
-                            <i class="fas fa-info-circle mr-2 text-blue-500"></i> Rappel du BarÃ¨me de Paie
+                            <i class="fas fa-info-circle mr-2 text-blue-500"></i> Rappel du Barème de Paie
                         </h4>
                         <div class="grid grid-cols-2 gap-3 text-xs">
                             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
@@ -153,9 +153,9 @@
                         <div class="border-b pb-4 flex justify-between items-center">
                             <div>
                                 <h3 class="font-black text-xl uppercase tracking-tight text-slate-900">Saisie de Production</h3>
-                                <p class="text-xs text-slate-500 font-medium">1 parpaing cassÃ© = -50 FCFA sur la main d'Åuvre</p>
+                                <p class="text-xs text-slate-500 font-medium">1 parpaing cassé = -50 FCFA sur la main d'œuvre</p>
                             </div>
-                            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-black text-[10px] rounded-full uppercase tracking-wider">Ãquipe Unique</span>
+                            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-black text-[10px] rounded-full uppercase tracking-wider">Équipe Unique</span>
                         </div>
 
                         <div class="space-y-4">
@@ -166,14 +166,14 @@
                                         <input type="radio" name="p-type-radio" value="15" checked onchange="document.getElementById('p-type').value=15; calculerPaieChef();" class="peer sr-only">
                                         <div class="p-4 rounded-2xl border-2 border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50/50 text-center font-black transition-all">
                                             <p class="text-lg text-slate-800">Parpaing de 15</p>
-                                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">5 blocs/planche â¢ ~9.5 pal/sac</p>
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">5 blocs/planche • ~9.5 pal/sac</p>
                                         </div>
                                     </label>
                                     <label class="cursor-pointer">
                                         <input type="radio" name="p-type-radio" value="20" onchange="document.getElementById('p-type').value=20; calculerPaieChef();" class="peer sr-only">
                                         <div class="p-4 rounded-2xl border-2 border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50/50 text-center font-black transition-all">
                                             <p class="text-lg text-slate-800">Parpaing de 20</p>
-                                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">3 blocs/planche â¢ ~12.5 pal/sac</p>
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">3 blocs/planche • ~12.5 pal/sac</p>
                                         </div>
                                     </label>
                                 </div>
@@ -190,17 +190,17 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                                 <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Palettes RÃ©elles Obtenues</label>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Palettes Réelles Obtenues</label>
                                     <input type="number" id="p-reelles" oninput="calculerPaieChef()" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl font-black text-xl text-slate-800 outline-none focus:border-blue-600 focus:bg-white transition-all placeholder:text-slate-300" placeholder="0">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black text-red-500 uppercase tracking-wider mb-1"><i class="fas fa-heart-crack mr-1"></i> Parpaings CassÃ©s (Pertes)</label>
+                                    <label class="block text-[10px] font-black text-red-500 uppercase tracking-wider mb-1"><i class="fas fa-heart-crack mr-1"></i> Parpaings Cassés (Pertes)</label>
                                     <input type="number" id="p-casses" oninput="calculerPaieChef()" class="w-full p-4 bg-red-50/50 border-2 border-red-200 rounded-2xl font-black text-xl text-red-600 outline-none focus:border-red-500 focus:bg-white transition-all placeholder:text-red-300" placeholder="0">
                                 </div>
                             </div>
 
                             <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200/80 flex justify-between items-center">
-                                <span class="text-xs font-black text-slate-500 uppercase">PrÃ©cision du Rendement :</span>
+                                <span class="text-xs font-black text-slate-500 uppercase">Précision du Rendement :</span>
                                 <span id="p-prec-label" class="text-2xl font-black text-slate-400">--%</span>
                             </div>
                         </div>
@@ -239,7 +239,7 @@
                     <div>
                         <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Stock Parpaings 15</span>
                         <p id="s-p15" class="text-3xl font-black text-blue-600 mt-1">0 <span class="text-xs text-slate-400 font-bold">blocs</span></p>
-                        <p class="text-[10px] text-slate-400 font-bold mt-2">AlimentÃ© par la production</p>
+                        <p class="text-[10px] text-slate-400 font-bold mt-2">Alimenté par la production</p>
                     </div>
                     <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-xl">
                         <i class="fas fa-layer-group"></i>
@@ -251,7 +251,7 @@
                     <div>
                         <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Stock Parpaings 20</span>
                         <p id="s-p20" class="text-3xl font-black text-indigo-600 mt-1">0 <span class="text-xs text-slate-400 font-bold">blocs</span></p>
-                        <p class="text-[10px] text-slate-400 font-bold mt-2">AlimentÃ© par la production</p>
+                        <p class="text-[10px] text-slate-400 font-bold mt-2">Alimenté par la production</p>
                     </div>
                     <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-xl">
                         <i class="fas fa-boxes-stacked"></i>
@@ -290,24 +290,24 @@
                         </div>
 
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">QuantitÃ© Ã  Sortir du Stock</label>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Quantité à Sortir du Stock</label>
                             <input type="number" id="v-qte" oninput="calculerResteVente()" placeholder="0" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-2xl font-black text-slate-900 outline-none focus:border-blue-600 focus:bg-white transition-all">
                         </div>
                         
                         <div class="bg-blue-50/70 p-5 rounded-2xl space-y-3 border border-blue-100">
                             <div>
-                                <label class="block text-[10px] font-black text-blue-800 uppercase tracking-wider mb-1">Avance VersÃ©e (FCFA)</label>
+                                <label class="block text-[10px] font-black text-blue-800 uppercase tracking-wider mb-1">Avance Versée (FCFA)</label>
                                 <input type="number" id="v-avance" oninput="calculerResteVente()" placeholder="0" class="w-full p-3 bg-white border border-blue-200 rounded-xl font-black text-slate-900 text-lg outline-none focus:border-blue-600">
                             </div>
                             <div class="flex justify-between items-center text-sm border-t border-blue-200/80 pt-3">
-                                <span class="font-black text-slate-500 uppercase text-[10px]">Reste Ã  Payer :</span>
+                                <span class="font-black text-slate-500 uppercase text-[10px]">Reste à Payer :</span>
                                 <span id="v-reste-label" class="font-black text-xl text-red-600">0 FCFA</span>
                             </div>
                         </div>
 
                         <button onclick="enregistrerEtFacturer()" class="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-xl shadow-lg transition-all uppercase tracking-wider text-xs flex items-center justify-center space-x-2">
                             <i class="fas fa-print"></i>
-                            <span>DÃ©duire du Stock & Ãditer le ReÃ§u</span>
+                            <span>Déduire du Stock & Éditer le Reçu</span>
                         </button>
                     </div>
                 </div>
@@ -331,14 +331,14 @@
                                     <tr>
                                         <th class="p-4 rounded-l-xl">Date</th>
                                         <th class="p-4">Client / Camion</th>
-                                        <th class="p-4 text-center">QtÃ©</th>
+                                        <th class="p-4 text-center">Qté</th>
                                         <th class="p-4 text-right">Total</th>
                                         <th class="p-4 text-right">Reste</th>
                                         <th class="p-4 text-center rounded-r-xl">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table-historique" class="font-medium divide-y divide-slate-100">
-                                    <!-- InjectÃ© par JS -->
+                                    <!-- Injecté par JS -->
                                 </tbody>
                             </table>
                         </div>
@@ -351,11 +351,11 @@
         <section id="tab-stats" class="tab-content space-y-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="stat-card glass-panel p-6 rounded-3xl shadow-lg border-b-4 border-blue-600">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Chiffre d'Affaires CumulÃ©</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Chiffre d'Affaires Cumulé</p>
                     <p id="stat-ca" class="text-3xl font-black text-slate-900 mt-2">0 F</p>
                 </div>
                 <div class="stat-card glass-panel p-6 rounded-3xl shadow-lg border-b-4 border-red-500">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Total CrÃ©dits en Souffrance</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Total Crédits en Souffrance</p>
                     <p id="stat-credits" class="text-3xl font-black text-red-600 mt-2">0 F</p>
                 </div>
                 <div class="stat-card glass-panel p-6 rounded-3xl shadow-lg border-b-4 border-emerald-500">
@@ -363,14 +363,14 @@
                     <p id="stat-best-seller" class="text-3xl font-black text-emerald-600 mt-2">-</p>
                 </div>
                 <div class="stat-card glass-panel p-6 rounded-3xl shadow-lg border-b-4 border-orange-500">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">PrÃ©cision Moyenne Usine</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Précision Moyenne Usine</p>
                     <p id="stat-precision" class="text-3xl font-black text-orange-500 mt-2">0%</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="glass-panel p-8 rounded-3xl shadow-xl border border-slate-200">
-                    <h3 class="font-black text-lg mb-6 uppercase tracking-tight text-slate-900">Total Sacs de Ciment ConsommÃ©s</h3>
+                    <h3 class="font-black text-lg mb-6 uppercase tracking-tight text-slate-900">Total Sacs de Ciment Consommés</h3>
                     <div id="hebdo-bars" class="space-y-4"></div>
                 </div>
 
@@ -410,8 +410,8 @@
     <!-- MODALE SELECTION DATE BILAN JOURNALIER -->
     <div id="modal-bilan" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="glass-panel p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 relative animate-in fade-in zoom-in duration-200">
-            <h3 class="font-black text-xl uppercase tracking-tight text-slate-900 mb-2">Bilan Journalier & ClÃ´ture</h3>
-            <p class="text-xs text-slate-500 font-semibold mb-6">SÃ©lectionnez la date pour gÃ©nÃ©rer le rapport consolidÃ© des ventes, productions et casses.</p>
+            <h3 class="font-black text-xl uppercase tracking-tight text-slate-900 mb-2">Bilan Journalier & Clôture</h3>
+            <p class="text-xs text-slate-500 font-semibold mb-6">Sélectionnez la date pour générer le rapport consolidé des ventes, productions et casses.</p>
 
             <div class="space-y-4">
                 <div>
@@ -425,7 +425,7 @@
                     </button>
                     <button onclick="genererRapportBilan()" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center space-x-2">
                         <i class="fas fa-calculator"></i>
-                        <span>GÃ©nÃ©rer Bilan</span>
+                        <span>Générer Bilan</span>
                     </button>
                 </div>
             </div>
@@ -440,7 +440,7 @@
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Nombre de sacs reÃ§us</label>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Nombre de sacs reçus</label>
                     <input type="number" id="ciment-ajout-input" placeholder="ex: 200" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-2xl font-black text-slate-900 outline-none focus:border-blue-600 focus:bg-white transition-all">
                 </div>
                 
@@ -479,7 +479,7 @@
             stocks: { ciment: 500, p15: 1000, p20: 1000 }
         };
 
-        // --- GESTION DE LA SÃCURITÃ ---
+        // --- GESTION DE LA SÉCURITÉ ---
         function verifierMotDePasse(e) {
             e.preventDefault();
             const pass = document.getElementById('auth-password').value;
@@ -583,9 +583,9 @@
             const casses = parseFloat(document.getElementById('p-casses').value) || 0;
             const type = document.getElementById('p-type').value;
             
-            // Paie brute basÃ©e sur les sacs
+            // Paie brute basée sur les sacs
             const paieBrute = calculerPaie(sacs, type);
-            // DÃ©duction de 50 FCFA par parpaing cassÃ©
+            // Déduction de 50 FCFA par parpaing cassé
             const paieNette = Math.max(0, paieBrute - (casses * 50));
 
             document.getElementById('p-gains-live').innerText = paieNette.toLocaleString() + " FCFA";
@@ -615,7 +615,7 @@
             const casses = parseFloat(document.getElementById('p-casses').value) || 0;
             const type = document.getElementById('p-type').value;
 
-            if(!sacs || !reelles) return alert("Veuillez saisir le nombre de sacs et de palettes rÃ©elles !");
+            if(!sacs || !reelles) return alert("Veuillez saisir le nombre de sacs et de palettes réelles !");
 
             const blocksBruts = type === "15" ? reelles * 5 : reelles * 3;
             const blocksNetIntacts = Math.max(0, blocksBruts - casses);
@@ -637,7 +637,7 @@
             await _supabase.from('production_logs').insert([newLog]);
             await _supabase.from('stocks').update({ ciment: newCiment, p15: newP15, p20: newP20 }).eq('id', 1);
 
-            alert(`Session enregistrÃ©e ! +${blocksNetIntacts.toLocaleString()} parpaings intacts ajoutÃ©s au stock (${casses} cassÃ©s dÃ©duits).`);
+            alert(`Session enregistrée ! +${blocksNetIntacts.toLocaleString()} parpaings intacts ajoutés au stock (${casses} cassés déduits).`);
             
             document.getElementById('p-sacs').value = '';
             document.getElementById('p-reelles').value = '';
@@ -664,12 +664,12 @@
             
             await _supabase.from('stocks').update({ ciment: nouveauTotal }).eq('id', 1);
             
-            alert(`Stock mis Ã  jour ! +${ajout} sacs de ciment ajoutÃ©s.`);
+            alert(`Stock mis à jour ! +${ajout} sacs de ciment ajoutés.`);
             fermerModalCiment();
             await loadDataFromSupabase();
         }
 
-        // --- GESTION DES VENTES & DÃDUCTION DE STOCK ---
+        // --- GESTION DES VENTES & DÉDUCTION DE STOCK ---
         function updatePrixVente() {
             const t = document.getElementById('v-type').value;
             const select = document.getElementById('v-prix');
@@ -694,11 +694,11 @@
             const avance = parseFloat(document.getElementById('v-avance').value) || 0;
             const type = document.getElementById('v-type').value;
             
-            if(qte <= 0) return alert("Veuillez entrer une quantitÃ© valide.");
+            if(qte <= 0) return alert("Veuillez entrer une quantité valide.");
 
             const currentStock = type === "15" ? state.stocks.p15 : state.stocks.p20;
             if (qte > currentStock) {
-                if(!confirm(`Attention : La quantitÃ© demandÃ©e (${qte}) dÃ©passe le stock de parpaings de ${type} disponible (${currentStock}). Voulez-vous quand mÃªme forcer la sortie ?`)) {
+                if(!confirm(`Attention : La quantité demandée (${qte}) dépasse le stock de parpaings de ${type} disponible (${currentStock}). Voulez-vous quand même forcer la sortie ?`)) {
                     return;
                 }
             }
@@ -814,7 +814,7 @@
                 elemHebdo.innerHTML = `
                     <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex justify-between items-center">
                         <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase">Sacs de Ciment ConsommÃ©s</p>
+                            <p class="text-xs font-bold text-slate-400 uppercase">Sacs de Ciment Consommés</p>
                             <p class="text-3xl font-black text-slate-900 mt-1">${totalSacs.toLocaleString()} <span class="text-sm text-slate-400">sacs</span></p>
                         </div>
                         <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-xl font-black">
@@ -876,7 +876,7 @@
         // --- GESTION DU BILAN JOURNALIER ---
         function ouvrirModalBilan() {
             if (!isAuthenticated) {
-                alert("L'accÃ¨s au Bilan Journalier nÃ©cessite de dÃ©verrouiller l'Espace SÃ©curisÃ©.");
+                alert("L'accès au Bilan Journalier nécessite de déverrouiller l'Espace Sécurisé.");
                 switchTab('sec');
                 return;
             }
@@ -907,7 +907,7 @@
 
             const cimentConsomme = prodDuJour.reduce((a, b) => a + b.sacs, 0);
             const totalCasses = prodDuJour.reduce((a, b) => a + (b.casses || 0), 0);
-            const valeurPertesCasses = totalCasses * 50; // 50 FCFA par parpaing cassÃ©
+            const valeurPertesCasses = totalCasses * 50; // 50 FCFA par parpaing cassé
             const paieMainOeuvre = prodDuJour.reduce((a, b) => a + b.paie, 0);
             
             const palettes15 = prodDuJour.filter(p => p.type === 15).reduce((a, b) => a + b.reelles, 0);
@@ -922,11 +922,11 @@
                     <div class="border-b-4 border-slate-900 pb-6 flex justify-between items-start">
                         <div>
                             <h1 class="text-4xl font-black italic tracking-tight text-slate-900">SIGMA BLOCK FABRIQUE</h1>
-                            <p class="text-blue-600 font-extrabold text-sm uppercase tracking-widest mt-1">Rapport de Bilan Journalier & ClÃ´ture de Caisse</p>
+                            <p class="text-blue-600 font-extrabold text-sm uppercase tracking-widest mt-1">Rapport de Bilan Journalier & Clôture de Caisse</p>
                             <p class="text-slate-500 font-bold text-xs mt-1">Douala, Cameroun</p>
                         </div>
                         <div class="text-right bg-slate-900 text-white p-4 rounded-2xl">
-                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-wider">JOURNÃE DU</p>
+                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-wider">JOURNÉE DU</p>
                             <p class="text-lg font-black uppercase">${formattedDate}</p>
                         </div>
                     </div>
@@ -936,15 +936,15 @@
                         <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200">
                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Chiffre d'Affaires Brut</p>
                             <p class="text-2xl font-black text-slate-900 mt-1">${caTotal.toLocaleString()} F</p>
-                            <p class="text-[10px] text-slate-500 font-bold mt-1">${ventesDuJour.length} vente(s) enregistrÃ©e(s)</p>
+                            <p class="text-[10px] text-slate-500 font-bold mt-1">${ventesDuJour.length} vente(s) enregistrée(s)</p>
                         </div>
                         <div class="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200">
-                            <p class="text-[10px] font-black text-emerald-700 uppercase tracking-wider">EspÃ¨ces EncaissÃ©es (Avances)</p>
+                            <p class="text-[10px] font-black text-emerald-700 uppercase tracking-wider">Espèces Encaissées (Avances)</p>
                             <p class="text-2xl font-black text-emerald-700 mt-1">${avancesEncaisses.toLocaleString()} F</p>
                             <p class="text-[10px] text-emerald-600 font-bold mt-1">Total Net en Caisse</p>
                         </div>
                         <div class="bg-red-50 p-5 rounded-2xl border-2 border-red-200">
-                            <p class="text-[10px] font-black text-red-600 uppercase tracking-wider">CrÃ©dits / Restes du Jour</p>
+                            <p class="text-[10px] font-black text-red-600 uppercase tracking-wider">Crédits / Restes du Jour</p>
                             <p class="text-2xl font-black text-red-600 mt-1">${creditsRestes.toLocaleString()} F</p>
                             <p class="text-[10px] text-red-500 font-bold mt-1">A recouvrer chez les clients</p>
                         </div>
@@ -955,11 +955,11 @@
                         <!-- STATS PRODUCTION -->
                         <div class="border-2 border-slate-200 p-6 rounded-2xl space-y-4">
                             <h3 class="font-black text-slate-900 uppercase text-sm border-b pb-2 flex items-center">
-                                <i class="fas fa-industry text-blue-600 mr-2"></i> Bilan ActivitÃ© Production
+                                <i class="fas fa-industry text-blue-600 mr-2"></i> Bilan Activité Production
                             </h3>
                             <div class="space-y-2 text-xs">
                                 <div class="flex justify-between py-1 border-b border-slate-100">
-                                    <span class="text-slate-500 font-bold">Ciment consommÃ© :</span>
+                                    <span class="text-slate-500 font-bold">Ciment consommé :</span>
                                     <span class="font-black text-slate-900">${cimentConsomme} sacs</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-slate-100">
@@ -971,11 +971,11 @@
                                     <span class="font-black text-slate-900">${blocs20Bruts} blocs (${palettes20} pal)</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-slate-100 text-red-600">
-                                    <span class="font-bold">Total Parpaings CassÃ©s :</span>
-                                    <span class="font-black">${totalCasses} blocs (${valeurPertesCasses.toLocaleString()} FCFA dÃ©duits)</span>
+                                    <span class="font-bold">Total Parpaings Cassés :</span>
+                                    <span class="font-black">${totalCasses} blocs (${valeurPertesCasses.toLocaleString()} FCFA déduits)</span>
                                 </div>
                                 <div class="flex justify-between py-1 pt-2">
-                                    <span class="text-blue-600 font-black">Main d'Åuvre Ãquipe Ã  payer :</span>
+                                    <span class="text-blue-600 font-black">Main d'œuvre Équipe à payer :</span>
                                     <span class="font-black text-blue-600 text-sm">${paieMainOeuvre.toLocaleString()} FCFA</span>
                                 </div>
                             </div>
@@ -1009,14 +1009,14 @@
 
                     <!-- TABLEAU DETAIL FACTURES DU JOUR -->
                     <div class="border-2 border-slate-200 rounded-2xl p-6">
-                        <h3 class="font-black text-slate-900 uppercase text-xs mb-4">DÃ©tail des Factures Ãmises le ${formattedDate}</h3>
+                        <h3 class="font-black text-slate-900 uppercase text-xs mb-4">Détail des Factures Émises le ${formattedDate}</h3>
                         <table class="w-full text-left text-xs">
                             <thead class="bg-slate-900 text-white uppercase text-[9px]">
                                 <tr>
                                     <th class="p-2">Client</th>
                                     <th class="p-2">Camion</th>
                                     <th class="p-2 text-center">Produit</th>
-                                    <th class="p-2 text-center">QtÃ©</th>
+                                    <th class="p-2 text-center">Qté</th>
                                     <th class="p-2 text-right">Total</th>
                                     <th class="p-2 text-right">Avance</th>
                                     <th class="p-2 text-right">Reste</th>
@@ -1033,7 +1033,7 @@
                                         <td class="p-2 text-right text-emerald-600 font-bold">${v.avance.toLocaleString()} F</td>
                                         <td class="p-2 text-right text-red-600 font-bold">${v.reste.toLocaleString()} F</td>
                                     </tr>
-                                `).join('') : '<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Aucune vente enregistrÃ©e pour cette journÃ©e.</td></tr>'}
+                                `).join('') : '<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Aucune vente enregistrée pour cette journée.</td></tr>'}
                             </tbody>
                         </table>
                     </div>
@@ -1041,7 +1041,7 @@
                     <!-- SIGNATURES ET CLOTURE -->
                     <div class="pt-8 grid grid-cols-2 gap-12">
                         <div class="border-2 border-dashed border-slate-300 h-28 rounded-2xl p-4 flex flex-col justify-between">
-                            <span class="text-[9px] font-black uppercase text-slate-400">Signature du SecrÃ©taire / Caissier</span>
+                            <span class="text-[9px] font-black uppercase text-slate-400">Signature du Secrétaire / Caissier</span>
                             <span class="text-xs font-bold text-slate-300">Nom & Date</span>
                         </div>
                         <div class="border-2 border-dashed border-slate-300 h-28 rounded-2xl p-4 flex flex-col justify-between">
@@ -1078,11 +1078,11 @@
                     <div class="flex justify-between items-start mb-6 border-b border-slate-200 pb-4">
                         <div>
                             <h1 class="text-3xl font-black italic tracking-tight text-slate-900">SIGMA BLOCK</h1>
-                            <p class="text-blue-600 font-bold text-xs mt-0.5">RECâ${v.id.toString().slice(-6)}</p>
+                            <p class="text-blue-600 font-bold text-xs mt-0.5">REC—${v.id.toString().slice(-6)}</p>
                         </div>
                         <div class="text-right text-[10px] font-bold uppercase text-slate-600 leading-relaxed">
                             Sigma Block Fabrique<br>
-                            Parpaings VibrÃ©s Haute RÃ©sistance<br>
+                            Parpaings Vibrés Haute Résistance<br>
                             Douala, Cameroun
                         </div>
                     </div>
@@ -1094,7 +1094,7 @@
                             <p class="text-[10px] text-slate-500 font-bold">Camion: ${v.camion}</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-slate-400 uppercase text-[8px] font-black tracking-wider">Date d'Ãmission</p>
+                            <p class="text-slate-400 uppercase text-[8px] font-black tracking-wider">Date d'Émission</p>
                             <p class="font-black text-slate-900">${v.date_vente || new Date().toLocaleDateString('fr-FR')}</p>
                         </div>
                     </div>
@@ -1102,15 +1102,15 @@
                     <table class="w-full mb-4 text-xs">
                         <thead>
                             <tr class="bg-slate-900 text-white text-[9px] uppercase tracking-wider">
-                                <th class="p-2 text-left rounded-l">DÃ©signation</th>
+                                <th class="p-2 text-left rounded-l">Désignation</th>
                                 <th class="p-2 text-center">P.U</th>
-                                <th class="p-2 text-center">QtÃ©</th>
+                                <th class="p-2 text-center">Qté</th>
                                 <th class="p-2 text-right rounded-r">Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="border-b font-bold text-slate-800">
-                                <td class="p-2.5">Parpaing de ${v.type} VibrÃ©</td>
+                                <td class="p-2.5">Parpaing de ${v.type} Vibré</td>
                                 <td class="p-2.5 text-center">${v.prix} FCFA</td>
                                 <td class="p-2.5 text-center">${v.qte}</td>
                                 <td class="p-2.5 text-right font-black">${v.total.toLocaleString()} FCFA</td>
@@ -1124,7 +1124,7 @@
                             <span class="font-black text-slate-900">${v.total.toLocaleString()} FCFA</span>
                         </div>
                         <div class="flex justify-between w-48 text-emerald-600 text-[11px] font-bold">
-                            <span>Avance VersÃ©e :</span>
+                            <span>Avance Versée :</span>
                             <span>- ${v.avance.toLocaleString()} FCFA</span>
                         </div>
                         <div class="flex justify-between w-48 text-base font-black text-red-600 border-t-2 border-slate-900 pt-1">
@@ -1147,7 +1147,7 @@
                     ${buildSingleReceipt(v, false)}
                     <div class="relative flex py-2 items-center">
                         <div class="flex-grow border-t-2 border-dashed border-slate-300"></div>
-                        <span class="flex-shrink mx-4 text-slate-400 text-[10px] font-black uppercase tracking-widest"><i class="fas fa-scissors mr-1"></i> Ligne de DÃ©coupe</span>
+                        <span class="flex-shrink mx-4 text-slate-400 text-[10px] font-black uppercase tracking-widest"><i class="fas fa-scissors mr-1"></i> Ligne de Découpe</span>
                         <div class="flex-grow border-t-2 border-dashed border-slate-300"></div>
                     </div>
                     ${buildSingleReceipt(v, true)}
