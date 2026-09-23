@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sigma Block Manager | Pro Edition</title>
+    <title>Sigma Block Manager | 专业版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- SDK SUPABASE -->
+    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
+        body { font-family: 'Noto Sans SC', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
         @media print { 
             .no-print { display: none !important; } 
             body { background: white !important; }
@@ -25,7 +25,7 @@
 </head>
 <body class="bg-slate-100/80 text-slate-900 antialiased min-h-screen flex flex-col">
 
-    <!-- NAVIGATION -->
+    <!-- 导航栏 -->
     <nav class="bg-slate-950 text-white p-4 shadow-2xl sticky top-0 z-40 no-print border-b border-slate-800">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3">
@@ -34,38 +34,38 @@
                 </div>
                 <div>
                     <span class="text-xl font-black tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">Sigma <span class="text-blue-500">Pro</span></span>
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest -mt-1">Gestion Industrielle & Stocks</p>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest -mt-1">工业生产与库存管理系统</p>
                 </div>
             </div>
             
             <div class="flex items-center space-x-2 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800/80">
                 <button onclick="switchTab('prod')" id="btn-tab-prod" class="px-4 py-2 rounded-xl transition font-bold text-xs uppercase tracking-wider flex items-center space-x-2 bg-blue-600 text-white shadow-lg shadow-blue-600/30">
                     <i class="fas fa-hammer text-xs"></i>
-                    <span>Production</span>
+                    <span>生产录入</span>
                 </button>
                 <button onclick="switchTab('sec')" id="btn-tab-sec" class="px-4 py-2 rounded-xl transition font-bold text-xs uppercase tracking-wider text-slate-400 hover:text-white hover:bg-slate-800 flex items-center space-x-2">
                     <i class="fas fa-receipt text-xs"></i>
-                    <span>Ventes & Stocks</span>
+                    <span>销售与库存</span>
                 </button>
                 <button onclick="switchTab('stats')" id="btn-tab-stats" class="px-4 py-2 rounded-xl transition font-bold text-xs uppercase tracking-wider text-slate-400 hover:text-white hover:bg-slate-800 flex items-center space-x-2">
                     <i class="fas fa-chart-pie text-xs"></i>
-                    <span>Analytics</span>
+                    <span>数据分析</span>
                 </button>
                 <button onclick="ouvrirModalBilan()" id="btn-bilan" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition font-bold text-xs uppercase tracking-wider flex items-center space-x-2 shadow-lg shadow-emerald-600/30 ml-2">
                     <i class="fas fa-file-invoice-dollar text-xs"></i>
-                    <span>Bilan du Jour</span>
+                    <span>每日结算</span>
                 </button>
-                <button id="btn-logout" onclick="logout()" class="hidden px-3 py-2 rounded-xl text-red-400 hover:bg-red-500/10 transition font-bold text-xs uppercase tracking-wider ml-1" title="Déconnexion Secrétariat">
+                <button id="btn-logout" onclick="logout()" class="hidden px-3 py-2 rounded-xl text-red-400 hover:bg-red-500/10 transition font-bold text-xs uppercase tracking-wider ml-1" title="锁定/退出安全区">
                     <i class="fas fa-power-off"></i>
                 </button>
             </div>
         </div>
     </nav>
 
-    <!-- CONTENU PRINCIPAL -->
+    <!-- 主体内容 -->
     <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 no-print">
 
-        <!-- ECRAN DE VERROUILLAGE / MOT DE PASSE -->
+        <!-- 安全验证界面 -->
         <section id="tab-auth" class="tab-content py-12">
             <div class="max-w-md mx-auto">
                 <div class="glass-panel p-8 sm:p-10 rounded-3xl shadow-2xl border border-slate-200/80 text-center relative overflow-hidden">
@@ -73,107 +73,107 @@
                     <div class="w-20 h-20 bg-gradient-to-tr from-slate-900 to-blue-900 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-950/20 text-2xl">
                         <i class="fas fa-shield-halved"></i>
                     </div>
-                    <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Espace Sécurisé</h2>
-                    <p class="text-xs font-semibold text-slate-500 mt-2 mb-8">Veuillez saisir le code d'accès de la Direction pour continuer.</p>
+                    <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">安全验证区</h2>
+                    <p class="text-xs font-semibold text-slate-500 mt-2 mb-8">请输入管理层访问密码以继续操作。</p>
                     
                     <form onsubmit="verifierMotDePasse(event)" class="space-y-4">
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                                 <i class="fas fa-lock"></i>
                             </span>
-                            <input type="password" id="auth-password" placeholder="Mot de passe..." class="w-full pl-11 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl font-bold outline-none focus:border-blue-600 focus:bg-white transition-all text-slate-800 text-center text-lg tracking-widest placeholder:text-sm placeholder:tracking-normal">
+                            <input type="password" id="auth-password" placeholder="请输入密码..." class="w-full pl-11 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl font-bold outline-none focus:border-blue-600 focus:bg-white transition-all text-slate-800 text-center text-lg tracking-widest placeholder:text-sm placeholder:tracking-normal">
                         </div>
-                        <p id="auth-error" class="hidden text-xs font-bold text-red-500 bg-red-50 py-2 rounded-xl border border-red-100"><i class="fas fa-exclamation-circle mr-1"></i> Mot de passe incorrect !</p>
+                        <p id="auth-error" class="hidden text-xs font-bold text-red-500 bg-red-50 py-2 rounded-xl border border-red-100"><i class="fas fa-exclamation-circle mr-1"></i> 密码错误，请重试！</p>
                         <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-2xl shadow-xl shadow-slate-900/20 transition-all uppercase tracking-wider text-xs">
-                            Déverrouiller l'Espace
+                            解锁专区
                         </button>
                     </form>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION PRODUCTION -->
+        <!-- 生产管理模块 -->
         <section id="tab-prod" class="tab-content active space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 
-                <!-- CARTE PORTEFEUILLE GAINS -->
+                <!-- 预估人工薪酬卡片 -->
                 <div class="lg:col-span-5 space-y-6">
                     <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 p-8 rounded-3xl shadow-2xl text-white relative overflow-hidden border border-slate-800">
                         <div class="absolute -right-6 -bottom-6 text-9xl text-blue-500/10 pointer-events-none">
                             <i class="fas fa-sack-dollar"></i>
                         </div>
                         <div class="flex justify-between items-center mb-6">
-                            <span class="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-[10px] font-black tracking-widest text-blue-300 uppercase">Barème Dynamique</span>
+                            <span class="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-[10px] font-black tracking-widest text-blue-300 uppercase">动态薪资标准</span>
                             <span id="p-jour-label" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--/--/----</span>
                         </div>
-                        <p class="text-xs font-bold uppercase text-slate-400 tracking-wider">Main d'œuvre Estimée (Session)</p>
+                        <p class="text-xs font-bold uppercase text-slate-400 tracking-wider">预估人工资（本班次）</p>
                         <h2 id="p-gains-live" class="text-5xl font-black mt-2 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-200">0 FCFA</h2>
                         
                         <div class="mt-8 pt-6 border-t border-slate-800 grid grid-cols-2 gap-4 text-xs">
                             <div>
-                                <p class="text-slate-400 text-[10px] uppercase font-bold">Rendement Théorique</p>
-                                <p id="p-rendement-theo" class="font-black text-slate-200 text-sm mt-0.5">0 palettes</p>
+                                <p class="text-slate-400 text-[10px] uppercase font-bold">理论产能</p>
+                                <p id="p-rendement-theo" class="font-black text-slate-200 text-sm mt-0.5">0 托盘</p>
                             </div>
                             <div>
-                                <p class="text-slate-400 text-[10px] uppercase font-bold">Net Intact Ajouté au Stock</p>
-                                <p id="p-total-parpaings" class="font-black text-blue-400 text-sm mt-0.5">0 blocs</p>
+                                <p class="text-slate-400 text-[10px] uppercase font-bold">实际入库合格砖</p>
+                                <p id="p-total-parpaings" class="font-black text-blue-400 text-sm mt-0.5">0 块</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- GUIDES & REGLES -->
+                    <!-- 计薪规则说明 -->
                     <div class="glass-panel p-6 rounded-3xl shadow-lg space-y-3">
                         <h4 class="font-black text-xs uppercase tracking-wider text-slate-500 flex items-center">
-                            <i class="fas fa-info-circle mr-2 text-blue-500"></i> Rappel du Barème de Paie
+                            <i class="fas fa-info-circle mr-2 text-blue-500"></i> 工资计算标准参考
                         </h4>
                         <div class="grid grid-cols-2 gap-3 text-xs">
                             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
-                                <p class="font-black text-slate-800">Parpaing de 15</p>
+                                <p class="font-black text-slate-800">15# 空心砖</p>
                                 <ul class="text-[10px] text-slate-600 mt-1 space-y-0.5 font-medium">
-                                    <li>1 - 35 sacs : <strong class="text-slate-900">1000F</strong></li>
-                                    <li>36 - 55 sacs : <strong class="text-slate-900">2000F</strong></li>
-                                    <li>56+ sacs : <strong class="text-slate-900">3000F</strong></li>
+                                    <li>1 - 35 袋：<strong class="text-slate-900">1000F/袋</strong></li>
+                                    <li>36 - 55 袋：<strong class="text-slate-900">2000F/袋</strong></li>
+                                    <li>56+ 袋：<strong class="text-slate-900">3000F/袋</strong></li>
                                 </ul>
                             </div>
                             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
-                                <p class="font-black text-slate-800">Parpaing de 20</p>
+                                <p class="font-black text-slate-800">20# 空心砖</p>
                                 <ul class="text-[10px] text-slate-600 mt-1 space-y-0.5 font-medium">
-                                    <li>1 - 30 sacs : <strong class="text-slate-900">1000F</strong></li>
-                                    <li>31 - 50 sacs : <strong class="text-slate-900">2000F</strong></li>
-                                    <li>51+ sacs : <strong class="text-slate-900">3000F</strong></li>
+                                    <li>1 - 30 袋：<strong class="text-slate-900">1000F/袋</strong></li>
+                                    <li>31 - 50 袋：<strong class="text-slate-900">2000F/袋</strong></li>
+                                    <li>51+ 袋：<strong class="text-slate-900">3000F/袋</strong></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- FORMULAIRE SAISIE PRODUCTION -->
+                <!-- 生产数据录入表单 -->
                 <div class="lg:col-span-7">
                     <div class="glass-panel p-8 sm:p-10 rounded-3xl shadow-xl border border-slate-200 space-y-6">
                         <div class="border-b pb-4 flex justify-between items-center">
                             <div>
-                                <h3 class="font-black text-xl uppercase tracking-tight text-slate-900">Saisie de Production</h3>
-                                <p class="text-xs text-slate-500 font-medium">1 parpaing cassé = -50 FCFA sur la main d'œuvre</p>
+                                <h3 class="font-black text-xl uppercase tracking-tight text-slate-900">生产数据录入</h3>
+                                <p class="text-xs text-slate-500 font-medium">每破损 1 块砖，扣除工资 50 FCFA</p>
                             </div>
-                            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-black text-[10px] rounded-full uppercase tracking-wider">Équipe Unique</span>
+                            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-black text-[10px] rounded-full uppercase tracking-wider">班组标准</span>
                         </div>
 
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Type de Parpaing Produit</label>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">砖块规格型号</label>
                                 <div class="grid grid-cols-2 gap-4">
                                     <label class="cursor-pointer">
                                         <input type="radio" name="p-type-radio" value="15" checked onchange="document.getElementById('p-type').value=15; calculerPaieChef();" class="peer sr-only">
                                         <div class="p-4 rounded-2xl border-2 border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50/50 text-center font-black transition-all">
-                                            <p class="text-lg text-slate-800">Parpaing de 15</p>
-                                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">5 blocs/planche • ~9.5 pal/sac</p>
+                                            <p class="text-lg text-slate-800">15# 空心砖</p>
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">5 块/托盘 • 约 9.5 托/袋水泥</p>
                                         </div>
                                     </label>
                                     <label class="cursor-pointer">
                                         <input type="radio" name="p-type-radio" value="20" onchange="document.getElementById('p-type').value=20; calculerPaieChef();" class="peer sr-only">
                                         <div class="p-4 rounded-2xl border-2 border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50/50 text-center font-black transition-all">
-                                            <p class="text-lg text-slate-800">Parpaing de 20</p>
-                                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">3 blocs/planche • ~12.5 pal/sac</p>
+                                            <p class="text-lg text-slate-800">20# 空心砖</p>
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">3 块/托盘 • 约 12.5 托/袋水泥</p>
                                         </div>
                                     </label>
                                 </div>
@@ -184,49 +184,49 @@
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Nombre de sacs de ciment cuits</label>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">消耗水泥袋数（袋）</label>
                                 <input type="number" id="p-sacs" oninput="calculerPaieChef()" class="w-full p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-4xl font-black text-blue-900 outline-none focus:border-blue-600 focus:bg-white transition-all placeholder:text-slate-300" placeholder="0">
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                                 <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Palettes Réelles Obtenues</label>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">实际生产托盘数</label>
                                     <input type="number" id="p-reelles" oninput="calculerPaieChef()" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl font-black text-xl text-slate-800 outline-none focus:border-blue-600 focus:bg-white transition-all placeholder:text-slate-300" placeholder="0">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black text-red-500 uppercase tracking-wider mb-1"><i class="fas fa-heart-crack mr-1"></i> Parpaings Cassés (Pertes)</label>
+                                    <label class="block text-[10px] font-black text-red-500 uppercase tracking-wider mb-1"><i class="fas fa-heart-crack mr-1"></i> 破损废砖数量（块）</label>
                                     <input type="number" id="p-casses" oninput="calculerPaieChef()" class="w-full p-4 bg-red-50/50 border-2 border-red-200 rounded-2xl font-black text-xl text-red-600 outline-none focus:border-red-500 focus:bg-white transition-all placeholder:text-red-300" placeholder="0">
                                 </div>
                             </div>
 
                             <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200/80 flex justify-between items-center">
-                                <span class="text-xs font-black text-slate-500 uppercase">Précision du Rendement :</span>
+                                <span class="text-xs font-black text-slate-500 uppercase">产能达标率：</span>
                                 <span id="p-prec-label" class="text-2xl font-black text-slate-400">--%</span>
                             </div>
                         </div>
 
                         <button onclick="sauvegarderSession()" class="w-full bg-slate-900 hover:bg-black text-white font-black py-5 rounded-2xl shadow-xl shadow-slate-900/20 transition-all uppercase tracking-wider text-xs flex items-center justify-center space-x-2">
                             <i class="fas fa-plus-circle"></i>
-                            <span>Valider la Session (+ Enregistrer en Stock Intact)</span>
+                            <span>确认班次提交（自动计算并同步库房）</span>
                         </button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION VENTES & STOCKS -->
+        <!-- 销售与库存管理模块 -->
         <section id="tab-sec" class="tab-content space-y-8">
             
-            <!-- VUE MULTI-STOCKS REELS -->
+            <!-- 库存实时看板 -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <!-- STOCK CIMENT -->
+                <!-- 水泥库存 -->
                 <div class="glass-panel p-6 rounded-3xl shadow-lg border-l-8 border-orange-500 relative overflow-hidden flex justify-between items-center">
                     <div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Stock Ciment</span>
-                        <p id="s-ciment" class="text-3xl font-black text-slate-900 mt-1">0 <span class="text-xs text-slate-400 font-bold">sacs</span></p>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">水泥当前库存</span>
+                        <p id="s-ciment" class="text-3xl font-black text-slate-900 mt-1">0 <span class="text-xs text-slate-400 font-bold">袋</span></p>
                         <button onclick="ouvrirModalCiment()" class="mt-3 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-[10px] font-black uppercase tracking-wider shadow-md shadow-orange-500/20 transition-all flex items-center space-x-1">
                             <i class="fas fa-plus"></i>
-                            <span>Approvisionner</span>
+                            <span>采购入库</span>
                         </button>
                     </div>
                     <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-xl">
@@ -234,24 +234,24 @@
                     </div>
                 </div>
 
-                <!-- STOCK PARPAING 15 -->
+                <!-- 15# 砖库存 -->
                 <div class="glass-panel p-6 rounded-3xl shadow-lg border-l-8 border-blue-600 flex justify-between items-center">
                     <div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Stock Parpaings 15</span>
-                        <p id="s-p15" class="text-3xl font-black text-blue-600 mt-1">0 <span class="text-xs text-slate-400 font-bold">blocs</span></p>
-                        <p class="text-[10px] text-slate-400 font-bold mt-2">Alimenté par la production</p>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">15# 空心砖库存</span>
+                        <p id="s-p15" class="text-3xl font-black text-blue-600 mt-1">0 <span class="text-xs text-slate-400 font-bold">块</span></p>
+                        <p class="text-[10px] text-slate-400 font-bold mt-2">由生产模块自动联动更新</p>
                     </div>
                     <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-xl">
                         <i class="fas fa-layer-group"></i>
                     </div>
                 </div>
 
-                <!-- STOCK PARPAING 20 -->
+                <!-- 20# 砖库存 -->
                 <div class="glass-panel p-6 rounded-3xl shadow-lg border-l-8 border-indigo-600 flex justify-between items-center">
                     <div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Stock Parpaings 20</span>
-                        <p id="s-p20" class="text-3xl font-black text-indigo-600 mt-1">0 <span class="text-xs text-slate-400 font-bold">blocs</span></p>
-                        <p class="text-[10px] text-slate-400 font-bold mt-2">Alimenté par la production</p>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">20# 空心砖库存</span>
+                        <p id="s-p20" class="text-3xl font-black text-indigo-600 mt-1">0 <span class="text-xs text-slate-400 font-bold">块</span></p>
+                        <p class="text-[10px] text-slate-400 font-bold mt-2">由生产模块自动联动更新</p>
                     </div>
                     <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-xl">
                         <i class="fas fa-boxes-stacked"></i>
@@ -260,68 +260,68 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <!-- FORMULAIRE DE VENTE -->
+                <!-- 新建销售单表单 -->
                 <div class="lg:col-span-5">
                     <div class="glass-panel p-8 rounded-3xl shadow-xl border border-slate-200 space-y-4">
-                        <h3 class="font-black text-xl border-b pb-4 uppercase tracking-tight text-slate-900">Nouvelle Vente</h3>
+                        <h3 class="font-black text-xl border-b pb-4 uppercase tracking-tight text-slate-900">新建销售单</h3>
                         
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Nom du Client</label>
-                            <input type="text" id="v-client" placeholder="ex: Entreprise ABC" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-800 focus:bg-white focus:border-blue-600 transition-all">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">客户名称</label>
+                            <input type="text" id="v-client" placeholder="例如：ABC 建设公司" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-800 focus:bg-white focus:border-blue-600 transition-all">
                         </div>
 
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Matricule Camion / Chauffeur</label>
-                            <input type="text" id="v-camion" placeholder="ex: LT 123 AB" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-800 focus:bg-white focus:border-blue-600 transition-all">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">运输车牌 / 司机信息</label>
+                            <input type="text" id="v-camion" placeholder="例如：LT 123 AB" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-800 focus:bg-white focus:border-blue-600 transition-all">
                         </div>
                         
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Produit</label>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">产品型号</label>
                                 <select id="v-type" onchange="updatePrixVente()" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 outline-none focus:border-blue-600">
-                                    <option value="15">Parpaing 15</option>
-                                    <option value="20">Parpaing 20</option>
+                                    <option value="15">15# 空心砖</option>
+                                    <option value="20">20# 空心砖</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Prix Unitaire</label>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">单价 (FCFA)</label>
                                 <select id="v-prix" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-black text-blue-600 outline-none focus:border-blue-600"></select>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Quantité à Sortir du Stock</label>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">销售出库数量（块）</label>
                             <input type="number" id="v-qte" oninput="calculerResteVente()" placeholder="0" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-2xl font-black text-slate-900 outline-none focus:border-blue-600 focus:bg-white transition-all">
                         </div>
                         
                         <div class="bg-blue-50/70 p-5 rounded-2xl space-y-3 border border-blue-100">
                             <div>
-                                <label class="block text-[10px] font-black text-blue-800 uppercase tracking-wider mb-1">Avance Versée (FCFA)</label>
+                                <label class="block text-[10px] font-black text-blue-800 uppercase tracking-wider mb-1">本次已付预付款 (FCFA)</label>
                                 <input type="number" id="v-avance" oninput="calculerResteVente()" placeholder="0" class="w-full p-3 bg-white border border-blue-200 rounded-xl font-black text-slate-900 text-lg outline-none focus:border-blue-600">
                             </div>
                             <div class="flex justify-between items-center text-sm border-t border-blue-200/80 pt-3">
-                                <span class="font-black text-slate-500 uppercase text-[10px]">Reste à Payer :</span>
+                                <span class="font-black text-slate-500 uppercase text-[10px]">尚欠尾款 (Reste) :</span>
                                 <span id="v-reste-label" class="font-black text-xl text-red-600">0 FCFA</span>
                             </div>
                         </div>
 
                         <button onclick="enregistrerEtFacturer()" class="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-xl shadow-lg transition-all uppercase tracking-wider text-xs flex items-center justify-center space-x-2">
                             <i class="fas fa-print"></i>
-                            <span>Déduire du Stock & Éditer le Reçu</span>
+                            <span>扣减库存并生成发票凭证</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- HISTORIQUE DES VENTES TABLEAU -->
+                <!-- 销售历史明细表 -->
                 <div class="lg:col-span-7">
                     <div class="glass-panel p-8 rounded-3xl shadow-xl border border-slate-200 space-y-6">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4">
-                            <h3 class="font-black text-xl uppercase tracking-tight text-slate-900">Historique des Factures</h3>
+                            <h3 class="font-black text-xl uppercase tracking-tight text-slate-900">销售发票历史记录</h3>
                             <div class="relative w-full sm:w-64">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                                     <i class="fas fa-search text-xs"></i>
                                 </span>
-                                <input type="text" id="search-client" oninput="filterHistorique()" placeholder="Chercher un client..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-blue-600 focus:bg-white">
+                                <input type="text" id="search-client" oninput="filterHistorique()" placeholder="搜索客户名称..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-blue-600 focus:bg-white">
                             </div>
                         </div>
 
@@ -329,16 +329,16 @@
                             <table class="w-full text-left text-sm">
                                 <thead class="bg-slate-100/80 text-[10px] uppercase text-slate-400 font-black tracking-wider">
                                     <tr>
-                                        <th class="p-4 rounded-l-xl">Date</th>
-                                        <th class="p-4">Client / Camion</th>
-                                        <th class="p-4 text-center">Qté</th>
-                                        <th class="p-4 text-right">Total</th>
-                                        <th class="p-4 text-right">Reste</th>
-                                        <th class="p-4 text-center rounded-r-xl">Actions</th>
+                                        <th class="p-4 rounded-l-xl">日期</th>
+                                        <th class="p-4">客户 / 运输车牌</th>
+                                        <th class="p-4 text-center">数量 (型号)</th>
+                                        <th class="p-4 text-right">总金额</th>
+                                        <th class="p-4 text-right">欠款</th>
+                                        <th class="p-4 text-center rounded-r-xl">操作</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table-historique" class="font-medium divide-y divide-slate-100">
-                                    <!-- Injecté par JS -->
+                                    <!-- 由 JS 动态注入 -->
                                 </tbody>
                             </table>
                         </div>
@@ -347,39 +347,39 @@
             </div>
         </section>
 
-        <!-- SECTION ANALYTICS / STATS -->
+        <!-- 分析与统计模块 -->
         <section id="tab-stats" class="tab-content space-y-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="stat-card glass-panel p-6 rounded-3xl shadow-lg border-b-4 border-blue-600">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Chiffre d'Affaires Cumulé</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">累计总营业额</p>
                     <p id="stat-ca" class="text-3xl font-black text-slate-900 mt-2">0 F</p>
                 </div>
                 <div class="stat-card glass-panel p-6 rounded-3xl shadow-lg border-b-4 border-red-500">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Total Crédits en Souffrance</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">未结应收账款总额</p>
                     <p id="stat-credits" class="text-3xl font-black text-red-600 mt-2">0 F</p>
                 </div>
                 <div class="stat-card glass-panel p-6 rounded-3xl shadow-lg border-b-4 border-emerald-500">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Produit le Plus Vendu</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">最畅销砖块型号</p>
                     <p id="stat-best-seller" class="text-3xl font-black text-emerald-600 mt-2">-</p>
                 </div>
                 <div class="stat-card glass-panel p-6 rounded-3xl shadow-lg border-b-4 border-orange-500">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Précision Moyenne Usine</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">全厂平均达标率</p>
                     <p id="stat-precision" class="text-3xl font-black text-orange-500 mt-2">0%</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="glass-panel p-8 rounded-3xl shadow-xl border border-slate-200">
-                    <h3 class="font-black text-lg mb-6 uppercase tracking-tight text-slate-900">Total Sacs de Ciment Consommés</h3>
+                    <h3 class="font-black text-lg mb-6 uppercase tracking-tight text-slate-900">水泥累计消耗总量</h3>
                     <div id="hebdo-bars" class="space-y-4"></div>
                 </div>
 
                 <div class="glass-panel p-8 rounded-3xl shadow-xl border border-slate-200">
-                    <h3 class="font-black text-lg mb-6 uppercase tracking-tight text-slate-900">Part de Ventes par Produit</h3>
+                    <h3 class="font-black text-lg mb-6 uppercase tracking-tight text-slate-900">各类产品销售占比</h3>
                     <div class="space-y-6">
                         <div>
                             <div class="flex justify-between text-xs font-black mb-2">
-                                <span>PARPAING DE 15</span>
+                                <span>15# 空心砖</span>
                                 <span id="label-v15" class="text-blue-600">0%</span>
                             </div>
                             <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden p-0.5">
@@ -388,7 +388,7 @@
                         </div>
                         <div>
                             <div class="flex justify-between text-xs font-black mb-2">
-                                <span>PARPAING DE 20</span>
+                                <span>20# 空心砖</span>
                                 <span id="label-v20" class="text-orange-500">0%</span>
                             </div>
                             <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden p-0.5">
@@ -400,76 +400,76 @@
             </div>
 
             <div class="glass-panel p-8 rounded-3xl shadow-xl border border-slate-200">
-                <h3 class="font-black text-lg mb-6 uppercase tracking-tight text-slate-900">Top Clients (Classement par Chiffre d'Affaires)</h3>
+                <h3 class="font-black text-lg mb-6 uppercase tracking-tight text-slate-900">核心客户排行榜（按贡献营业额）</h3>
                 <div id="top-clients-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
         </section>
 
     </main>
 
-    <!-- MODALE SELECTION DATE BILAN JOURNALIER -->
+    <!-- 每日日终结算弹窗 -->
     <div id="modal-bilan" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="glass-panel p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 relative animate-in fade-in zoom-in duration-200">
-            <h3 class="font-black text-xl uppercase tracking-tight text-slate-900 mb-2">Bilan Journalier & Clôture</h3>
-            <p class="text-xs text-slate-500 font-semibold mb-6">Sélectionnez la date pour générer le rapport consolidé des ventes, productions et casses.</p>
+            <h3 class="font-black text-xl uppercase tracking-tight text-slate-900 mb-2">每日结算与结账清算</h3>
+            <p class="text-xs text-slate-500 font-semibold mb-6">请选择日期，系统将自动汇总结算当日的销售、生产及损耗报表。</p>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Date du bilan</label>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">结算日期</label>
                     <input type="date" id="bilan-date-input" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-lg font-black text-slate-900 outline-none focus:border-blue-600 focus:bg-white transition-all">
                 </div>
                 
                 <div class="flex space-x-3 pt-2">
                     <button onclick="fermerModalBilan()" class="w-1/2 py-3.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black rounded-xl text-xs uppercase tracking-wider transition-all">
-                        Annuler
+                        取消
                     </button>
                     <button onclick="genererRapportBilan()" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center space-x-2">
                         <i class="fas fa-calculator"></i>
-                        <span>Générer Bilan</span>
+                        <span>生成结算报表</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODALE CIMENT (REAPPROVISIONNEMENT) -->
+    <!-- 水泥补充入库弹窗 -->
     <div id="modal-ciment" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="glass-panel p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 relative animate-in fade-in zoom-in duration-200">
-            <h3 class="font-black text-xl uppercase tracking-tight text-slate-900 mb-2">Approvisionnement Ciment</h3>
-            <p class="text-xs text-slate-500 font-semibold mb-6">Ajouter de nouveaux sacs de ciment au stock actuel de l'usine.</p>
+            <h3 class="font-black text-xl uppercase tracking-tight text-slate-900 mb-2">水泥采购补充入库</h3>
+            <p class="text-xs text-slate-500 font-semibold mb-6">向砖厂库房增加新的水泥袋数。</p>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Nombre de sacs reçus</label>
-                    <input type="number" id="ciment-ajout-input" placeholder="ex: 200" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-2xl font-black text-slate-900 outline-none focus:border-blue-600 focus:bg-white transition-all">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">新入库袋数</label>
+                    <input type="number" id="ciment-ajout-input" placeholder="例如：200" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-2xl font-black text-slate-900 outline-none focus:border-blue-600 focus:bg-white transition-all">
                 </div>
                 
                 <div class="flex space-x-3 pt-2">
                     <button onclick="fermerModalCiment()" class="w-1/2 py-3.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black rounded-xl text-xs uppercase tracking-wider transition-all">
-                        Annuler
+                        取消
                     </button>
                     <button onclick="ajouterStockCiment()" class="w-1/2 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-orange-500/30">
-                        Ajouter au Stock
+                        确认增加库存
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ZONE FACTURE DOUBLE (CLIENT + SOUCHE) -->
+    <!-- 双联打印发票区域（客户联 + 存根联） -->
     <div id="facture-zone" class="hidden fixed inset-0 bg-white p-6 z-[100] overflow-auto"></div>
 
-    <!-- ZONE RAPPORT BILAN JOURNALIER IMPRIMABLE -->
+    <!-- 日终结算打印区域 -->
     <div id="bilan-print-zone" class="hidden fixed inset-0 bg-white p-8 z-[100] overflow-auto"></div>
 
-    <!-- SCRIPT APPLICATION -->
+    <!-- 应用程序核心逻辑 -->
     <script>
-        // CONFIGURATION SUPABASE
+        // SUPABASE 配置
         const SUPABASE_URL = "https://cjyevxeixlulsbgaiphs.supabase.co";
         const SUPABASE_KEY = "sb_publishable_-bZntjVr4uX3YH9WHR6rcg_r-4DA53x";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // AUTHENTIFICATION STATE
+        // 身份验证状态
         let isAuthenticated = false;
         let pendingTab = null;
 
@@ -479,7 +479,7 @@
             stocks: { ciment: 500, p15: 1000, p20: 1000 }
         };
 
-        // --- GESTION DE LA SÉCURITÉ ---
+        // --- 安全管理 ---
         function verifierMotDePasse(e) {
             e.preventDefault();
             const pass = document.getElementById('auth-password').value;
@@ -539,7 +539,7 @@
             });
         }
 
-        // --- CHARGEMENT SUPABASE ---
+        // --- SUPABASE 数据加载 ---
         async function loadDataFromSupabase() {
             try {
                 const { data: ventesData } = await _supabase.from('ventes').select('*').order('id', { ascending: false });
@@ -554,11 +554,11 @@
                 renderDashboard();
                 renderHistorique();
             } catch (err) {
-                console.error("Erreur Supabase:", err);
+                console.error("Supabase 访问错误:", err);
             }
         }
 
-        // --- BAREME PAIE PAR PALIERS ---
+        // --- 阶梯式工资计算机制 ---
         function calculerPaie(sacs, type) {
             let total = 0;
             let s = parseFloat(sacs) || 0;
@@ -583,9 +583,9 @@
             const casses = parseFloat(document.getElementById('p-casses').value) || 0;
             const type = document.getElementById('p-type').value;
             
-            // Paie brute basée sur les sacs
+            // 基于水泥袋数的应发基础工资
             const paieBrute = calculerPaie(sacs, type);
-            // Déduction de 50 FCFA par parpaing cassé
+            // 损耗扣款：每块废砖扣 50 FCFA
             const paieNette = Math.max(0, paieBrute - (casses * 50));
 
             document.getElementById('p-gains-live').innerText = paieNette.toLocaleString() + " FCFA";
@@ -596,8 +596,8 @@
             const totalBrut = reelles * (type === "15" ? 5 : 3);
             const totalNetIntact = Math.max(0, totalBrut - casses);
 
-            document.getElementById('p-rendement-theo').innerText = theoPalettes + " palettes";
-            document.getElementById('p-total-parpaings').innerText = totalNetIntact.toLocaleString() + " blocs";
+            document.getElementById('p-rendement-theo').innerText = theoPalettes + " 托盘";
+            document.getElementById('p-total-parpaings').innerText = totalNetIntact.toLocaleString() + " 块";
 
             if (sacs > 0) {
                 let precision = ((reelles / theoPalettes) * 100).toFixed(1);
@@ -615,7 +615,7 @@
             const casses = parseFloat(document.getElementById('p-casses').value) || 0;
             const type = document.getElementById('p-type').value;
 
-            if(!sacs || !reelles) return alert("Veuillez saisir le nombre de sacs et de palettes réelles !");
+            if(!sacs || !reelles) return alert("请填写消耗水泥袋数和实际生产托盘数！");
 
             const blocksBruts = type === "15" ? reelles * 5 : reelles * 3;
             const blocksNetIntacts = Math.max(0, blocksBruts - casses);
@@ -637,7 +637,7 @@
             await _supabase.from('production_logs').insert([newLog]);
             await _supabase.from('stocks').update({ ciment: newCiment, p15: newP15, p20: newP20 }).eq('id', 1);
 
-            alert(`Session enregistrée ! +${blocksNetIntacts.toLocaleString()} parpaings intacts ajoutés au stock (${casses} cassés déduits).`);
+            alert(`生产记录已成功保存！+${blocksNetIntacts.toLocaleString()} 块合格砖已入库（扣除损耗废砖 ${casses} 块）。`);
             
             document.getElementById('p-sacs').value = '';
             document.getElementById('p-reelles').value = '';
@@ -646,7 +646,7 @@
             await loadDataFromSupabase();
         }
 
-        // --- GESTION APPROVISIONNEMENT CIMENT ---
+        // --- 水泥采购逻辑 ---
         function ouvrirModalCiment() {
             document.getElementById('modal-ciment').classList.remove('hidden');
         }
@@ -658,18 +658,18 @@
 
         async function ajouterStockCiment() {
             const ajout = parseFloat(document.getElementById('ciment-ajout-input').value);
-            if (!ajout || ajout <= 0) return alert("Veuillez entrer un nombre valide de sacs !");
+            if (!ajout || ajout <= 0) return alert("请输入有效的水泥袋数！");
 
             const nouveauTotal = (state.stocks.ciment || 0) + ajout;
             
             await _supabase.from('stocks').update({ ciment: nouveauTotal }).eq('id', 1);
             
-            alert(`Stock mis à jour ! +${ajout} sacs de ciment ajoutés.`);
+            alert(`库存更新成功！已补充 +${ajout} 袋水泥。`);
             fermerModalCiment();
             await loadDataFromSupabase();
         }
 
-        // --- GESTION DES VENTES & DÉDUCTION DE STOCK ---
+        // --- 销售与库存扣减 ---
         function updatePrixVente() {
             const t = document.getElementById('v-type').value;
             const select = document.getElementById('v-prix');
@@ -687,18 +687,18 @@
         }
 
         async function enregistrerEtFacturer() {
-            const client = document.getElementById('v-client').value || "Client Comptant";
-            const camion = document.getElementById('v-camion').value || "N/A";
+            const client = document.getElementById('v-client').value || "现金散客";
+            const camion = document.getElementById('v-camion').value || "无";
             const qte = parseFloat(document.getElementById('v-qte').value) || 0;
             const prix = parseFloat(document.getElementById('v-prix').value) || 0;
             const avance = parseFloat(document.getElementById('v-avance').value) || 0;
             const type = document.getElementById('v-type').value;
             
-            if(qte <= 0) return alert("Veuillez entrer une quantité valide.");
+            if(qte <= 0) return alert("请输入有效的销售数量。");
 
             const currentStock = type === "15" ? state.stocks.p15 : state.stocks.p20;
             if (qte > currentStock) {
-                if(!confirm(`Attention : La quantité demandée (${qte}) dépasse le stock de parpaings de ${type} disponible (${currentStock}). Voulez-vous quand même forcer la sortie ?`)) {
+                if(!confirm(`警告：订购数量 (${qte}) 已超出当前 ${type}# 砖库存量 (${currentStock})。是否仍要强制出库？`)) {
                     return;
                 }
             }
@@ -741,21 +741,21 @@
                         <div class="font-black text-slate-800">${v.client}</div>
                         <div class="text-[10px] text-slate-400 italic">${v.camion}</div>
                     </td>
-                    <td class="p-4 text-center font-bold text-slate-600">${v.qte} (${v.type})</td>
+                    <td class="p-4 text-center font-bold text-slate-600">${v.qte} (${v.type}#)</td>
                     <td class="p-4 text-right font-black text-slate-900">${v.total.toLocaleString()} F</td>
                     <td class="p-4 text-right font-black ${v.reste > 0 ? 'text-red-500' : 'text-emerald-500'}">
                         ${v.reste.toLocaleString()} F
                     </td>
                     <td class="p-4 text-center">
-                        <button onclick="reimprimer(${v.id})" class="text-blue-600 hover:text-blue-800 p-1.5 rounded-lg hover:bg-blue-50 transition"><i class="fas fa-print"></i></button>
-                        <button onclick="supprimerVente(${v.id})" class="text-slate-300 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition"><i class="fas fa-trash text-xs"></i></button>
+                        <button onclick="reimprimer(${v.id})" class="text-blue-600 hover:text-blue-800 p-1.5 rounded-lg hover:bg-blue-50 transition" title="打印发票"><i class="fas fa-print"></i></button>
+                        <button onclick="supprimerVente(${v.id})" class="text-slate-300 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition" title="删除记录"><i class="fas fa-trash text-xs"></i></button>
                     </td>
                 </tr>
             `).join('');
         }
 
         async function supprimerVente(id) {
-            if(confirm("Voulez-vous vraiment supprimer cette facture ?")) {
+            if(confirm("确定要删除此发票记录吗？")) {
                 await _supabase.from('ventes').delete().eq('id', id);
                 await loadDataFromSupabase();
             }
@@ -777,7 +777,7 @@
                         <div class="font-black text-slate-800">${v.client}</div>
                         <div class="text-[10px] text-slate-400 italic">${v.camion}</div>
                     </td>
-                    <td class="p-4 text-center font-bold text-slate-600">${v.qte} (${v.type})</td>
+                    <td class="p-4 text-center font-bold text-slate-600">${v.qte} (${v.type}#)</td>
                     <td class="p-4 text-right font-black text-slate-900">${v.total.toLocaleString()} F</td>
                     <td class="p-4 text-right font-black ${v.reste > 0 ? 'text-red-500' : 'text-emerald-500'}">
                         ${v.reste.toLocaleString()} F
@@ -791,9 +791,9 @@
         }
 
         function renderDashboard() {
-            document.getElementById('s-ciment').innerHTML = `${(state.stocks.ciment || 0).toLocaleString()} <span class="text-xs font-bold text-slate-400">sacs</span>`;
-            document.getElementById('s-p15').innerHTML = `${(state.stocks.p15 || 0).toLocaleString()} <span class="text-xs font-bold text-slate-400">blocs</span>`;
-            document.getElementById('s-p20').innerHTML = `${(state.stocks.p20 || 0).toLocaleString()} <span class="text-xs font-bold text-slate-400">blocs</span>`;
+            document.getElementById('s-ciment').innerHTML = `${(state.stocks.ciment || 0).toLocaleString()} <span class="text-xs font-bold text-slate-400">袋</span>`;
+            document.getElementById('s-p15').innerHTML = `${(state.stocks.p15 || 0).toLocaleString()} <span class="text-xs font-bold text-slate-400">块</span>`;
+            document.getElementById('s-p20').innerHTML = `${(state.stocks.p20 || 0).toLocaleString()} <span class="text-xs font-bold text-slate-400">块</span>`;
             
             const logs = state.prod_logs;
             const totalSacs = logs.reduce((a, b) => a + (b.sacs || 0), 0);
@@ -806,7 +806,7 @@
             });
             const precGlobale = totalTheo > 0 ? ((totalReelles / totalTheo) * 100).toFixed(1) : 0;
             
-            const elemPrec = document.getElementById('stat-prec-globale');
+            const elemPrec = document.getElementById('stat-precision');
             if (elemPrec) elemPrec.innerText = precGlobale + "%";
 
             const elemHebdo = document.getElementById('hebdo-bars');
@@ -814,8 +814,8 @@
                 elemHebdo.innerHTML = `
                     <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex justify-between items-center">
                         <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase">Sacs de Ciment Consommés</p>
-                            <p class="text-3xl font-black text-slate-900 mt-1">${totalSacs.toLocaleString()} <span class="text-sm text-slate-400">sacs</span></p>
+                            <p class="text-xs font-bold text-slate-400 uppercase">水泥累计消耗总量</p>
+                            <p class="text-3xl font-black text-slate-900 mt-1">${totalSacs.toLocaleString()} <span class="text-sm text-slate-400">袋</span></p>
                         </div>
                         <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-xl font-black">
                             <i class="fas fa-cubes"></i>
@@ -824,16 +824,16 @@
                 `;
             }
 
-            const dateAujourdhui = new Date().toLocaleDateString('fr-FR', { 
-                weekday: 'short', 
-                day: 'numeric', 
-                month: 'short', 
-                year: 'numeric' 
+            const dateAujourdhui = new Date().toLocaleDateString('zh-CN', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
             });
             
             const labelDate = document.getElementById('p-jour-label');
             if (labelDate) {
-                labelDate.innerText = dateAujourdhui.toUpperCase();
+                labelDate.innerText = dateAujourdhui;
             }
         }
 
@@ -852,12 +852,11 @@
             const p20 = ((v20 / totalQte) * 100).toFixed(0);
 
             document.getElementById('bar-v15').style.width = p15 + "%";
-            document.getElementById('label-v15').innerText = p15 + "% (" + v15.toLocaleString() + " blocs)";
+            document.getElementById('label-v15').innerText = p15 + "% (" + v15.toLocaleString() + " 块)";
             document.getElementById('bar-v20').style.width = p20 + "%";
-            document.getElementById('label-v20').innerText = p20 + "% (" + v20.toLocaleString() + " blocs)";
+            document.getElementById('label-v20').innerText = p20 + "% (" + v20.toLocaleString() + " 块)";
 
-            document.getElementById('stat-best-seller').innerText = v15 >= v20 ? "Parpaing 15" : "Parpaing 20";
-            document.getElementById('stat-precision').innerText = document.getElementById('stat-prec-globale').innerText;
+            document.getElementById('stat-best-seller').innerText = v15 >= v20 ? "15# 空心砖" : "20# 空心砖";
 
             const clientStats = {};
             state.ventes.forEach(v => {
@@ -867,16 +866,16 @@
 
             document.getElementById('top-clients-list').innerHTML = sortedClients.map(([name, total], index) => `
                 <div class="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-                    <span class="font-black text-slate-800 text-sm"><span class="text-blue-500 font-black mr-2">#${index+1}</span> ${name}</span>
+                    <span class="font-black text-slate-800 text-sm"><span class="text-blue-500 font-black mr-2">第 ${index+1} 名</span> ${name}</span>
                     <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-black">${total.toLocaleString()} F</span>
                 </div>
             `).join('');
         }
 
-        // --- GESTION DU BILAN JOURNALIER ---
+        // --- 每日结算管理 ---
         function ouvrirModalBilan() {
             if (!isAuthenticated) {
-                alert("L'accès au Bilan Journalier nécessite de déverrouiller l'Espace Sécurisé.");
+                alert("访问每日结算功能需要先解锁安全管理专区。");
                 switchTab('sec');
                 return;
             }
@@ -891,9 +890,9 @@
 
         function genererRapportBilan() {
             const dateStr = document.getElementById('bilan-date-input').value;
-            if (!dateStr) return alert("Veuillez choisir une date valide !");
+            if (!dateStr) return alert("请选择有效的结算日期！");
 
-            const formattedDate = new Date(dateStr).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const formattedDate = new Date(dateStr).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
 
             const ventesDuJour = state.ventes.filter(v => v.date_vente === dateStr || (v.created_at && v.created_at.startsWith(dateStr)));
             const prodDuJour = state.prod_logs.filter(p => p.date_session === dateStr || (p.created_at && p.created_at.startsWith(dateStr)));
@@ -907,7 +906,7 @@
 
             const cimentConsomme = prodDuJour.reduce((a, b) => a + b.sacs, 0);
             const totalCasses = prodDuJour.reduce((a, b) => a + (b.casses || 0), 0);
-            const valeurPertesCasses = totalCasses * 50; // 50 FCFA par parpaing cassé
+            const valeurPertesCasses = totalCasses * 50; // 每块破损扣 50 FCFA
             const paieMainOeuvre = prodDuJour.reduce((a, b) => a + b.paie, 0);
             
             const palettes15 = prodDuJour.filter(p => p.type === 15).reduce((a, b) => a + b.reelles, 0);
@@ -918,108 +917,108 @@
 
             document.getElementById('bilan-print-zone').innerHTML = `
                 <div class="max-w-4xl mx-auto space-y-6 font-sans">
-                    <!-- ENTETE BILAN -->
+                    <!-- 报表抬头 -->
                     <div class="border-b-4 border-slate-900 pb-6 flex justify-between items-start">
                         <div>
-                            <h1 class="text-4xl font-black italic tracking-tight text-slate-900">SIGMA BLOCK FABRIQUE</h1>
-                            <p class="text-blue-600 font-extrabold text-sm uppercase tracking-widest mt-1">Rapport de Bilan Journalier & Clôture de Caisse</p>
-                            <p class="text-slate-500 font-bold text-xs mt-1">Douala, Cameroun</p>
+                            <h1 class="text-4xl font-black italic tracking-tight text-slate-900">SIGMA BLOCK 砖厂</h1>
+                            <p class="text-blue-600 font-extrabold text-sm uppercase tracking-widest mt-1">每日经营结算与现金扎帐日报表</p>
+                            <p class="text-slate-500 font-bold text-xs mt-1">喀麦隆 • 杜阿拉 (Douala, Cameroon)</p>
                         </div>
                         <div class="text-right bg-slate-900 text-white p-4 rounded-2xl">
-                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-wider">JOURNÉE DU</p>
+                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-wider">结算日期</p>
                             <p class="text-lg font-black uppercase">${formattedDate}</p>
                         </div>
                     </div>
 
-                    <!-- RESUME CAISSE & FINANCES -->
+                    <!-- 财务与资金概览 -->
                     <div class="grid grid-cols-3 gap-4">
                         <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200">
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Chiffre d'Affaires Brut</p>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">营业毛总额 (CA)</p>
                             <p class="text-2xl font-black text-slate-900 mt-1">${caTotal.toLocaleString()} F</p>
-                            <p class="text-[10px] text-slate-500 font-bold mt-1">${ventesDuJour.length} vente(s) enregistrée(s)</p>
+                            <p class="text-[10px] text-slate-500 font-bold mt-1">已登记 ${ventesDuJour.length} 笔销售</p>
                         </div>
                         <div class="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200">
-                            <p class="text-[10px] font-black text-emerald-700 uppercase tracking-wider">Espèces Encaissées (Avances)</p>
+                            <p class="text-[10px] font-black text-emerald-700 uppercase tracking-wider">实收现金（预付款总额）</p>
                             <p class="text-2xl font-black text-emerald-700 mt-1">${avancesEncaisses.toLocaleString()} F</p>
-                            <p class="text-[10px] text-emerald-600 font-bold mt-1">Total Net en Caisse</p>
+                            <p class="text-[10px] text-emerald-600 font-bold mt-1">今日出纳实收现金</p>
                         </div>
                         <div class="bg-red-50 p-5 rounded-2xl border-2 border-red-200">
-                            <p class="text-[10px] font-black text-red-600 uppercase tracking-wider">Crédits / Restes du Jour</p>
+                            <p class="text-[10px] font-black text-red-600 uppercase tracking-wider">新增挂账/欠款余额</p>
                             <p class="text-2xl font-black text-red-600 mt-1">${creditsRestes.toLocaleString()} F</p>
-                            <p class="text-[10px] text-red-500 font-bold mt-1">A recouvrer chez les clients</p>
+                            <p class="text-[10px] text-red-500 font-bold mt-1">待后续追讨的客户尾款</p>
                         </div>
                     </div>
 
-                    <!-- DETAIL PRODUCTION ET MAIN D'OEUVRE -->
+                    <!-- 生产及人工明细 -->
                     <div class="grid grid-cols-2 gap-6">
-                        <!-- STATS PRODUCTION -->
+                        <!-- 生产统计 -->
                         <div class="border-2 border-slate-200 p-6 rounded-2xl space-y-4">
                             <h3 class="font-black text-slate-900 uppercase text-sm border-b pb-2 flex items-center">
-                                <i class="fas fa-industry text-blue-600 mr-2"></i> Bilan Activité Production
+                                <i class="fas fa-industry text-blue-600 mr-2"></i> 车间生产统计
                             </h3>
                             <div class="space-y-2 text-xs">
                                 <div class="flex justify-between py-1 border-b border-slate-100">
-                                    <span class="text-slate-500 font-bold">Ciment consommé :</span>
-                                    <span class="font-black text-slate-900">${cimentConsomme} sacs</span>
+                                    <span class="text-slate-500 font-bold">水泥消耗量：</span>
+                                    <span class="font-black text-slate-900">${cimentConsomme} 袋</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-slate-100">
-                                    <span class="text-slate-500 font-bold">Parpaings 15 produits :</span>
-                                    <span class="font-black text-slate-900">${blocs15Bruts} blocs (${palettes15} pal)</span>
+                                    <span class="text-slate-500 font-bold">15# 砖生产总量：</span>
+                                    <span class="font-black text-slate-900">${blocs15Bruts} 块 (${palettes15} 托)</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-slate-100">
-                                    <span class="text-slate-500 font-bold">Parpaings 20 produits :</span>
-                                    <span class="font-black text-slate-900">${blocs20Bruts} blocs (${palettes20} pal)</span>
+                                    <span class="text-slate-500 font-bold">20# 砖生产总量：</span>
+                                    <span class="font-black text-slate-900">${blocs20Bruts} 块 (${palettes20} 托)</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-slate-100 text-red-600">
-                                    <span class="font-bold">Total Parpaings Cassés :</span>
-                                    <span class="font-black">${totalCasses} blocs (${valeurPertesCasses.toLocaleString()} FCFA déduits)</span>
+                                    <span class="font-bold">破损废砖总数：</span>
+                                    <span class="font-black">${totalCasses} 块 (已扣扣款 ${valeurPertesCasses.toLocaleString()} FCFA)</span>
                                 </div>
                                 <div class="flex justify-between py-1 pt-2">
-                                    <span class="text-blue-600 font-black">Main d'œuvre Équipe à payer :</span>
+                                    <span class="text-blue-600 font-black">工人工资应付总额：</span>
                                     <span class="font-black text-blue-600 text-sm">${paieMainOeuvre.toLocaleString()} FCFA</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- STATS VENTES & STOCKS -->
+                        <!-- 销售与库存流转 -->
                         <div class="border-2 border-slate-200 p-6 rounded-2xl space-y-4">
                             <h3 class="font-black text-slate-900 uppercase text-sm border-b pb-2 flex items-center">
-                                <i class="fas fa-boxes-stacked text-orange-500 mr-2"></i> Mouvements de Stock Produit
+                                <i class="fas fa-boxes-stacked text-orange-500 mr-2"></i> 产品库存变动
                             </h3>
                             <div class="space-y-2 text-xs">
                                 <div class="flex justify-between py-1 border-b border-slate-100">
-                                    <span class="text-slate-500 font-bold">Parpaings de 15 vendus :</span>
-                                    <span class="font-black text-slate-900">${blocs15Vendus} blocs</span>
+                                    <span class="text-slate-500 font-bold">15# 砖已售出库：</span>
+                                    <span class="font-black text-slate-900">${blocs15Vendus} 块</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-slate-100">
-                                    <span class="text-slate-500 font-bold">Parpaings de 20 vendus :</span>
-                                    <span class="font-black text-slate-900">${blocs20Vendus} blocs</span>
+                                    <span class="text-slate-500 font-bold">20# 砖已售出库：</span>
+                                    <span class="font-black text-slate-900">${blocs20Vendus} 块</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-slate-100">
-                                    <span class="text-slate-500 font-bold">Stock Restant Parpaings 15 :</span>
-                                    <span class="font-black text-blue-600">${state.stocks.p15} blocs</span>
+                                    <span class="text-slate-500 font-bold">15# 砖剩余库存：</span>
+                                    <span class="font-black text-blue-600">${state.stocks.p15} 块</span>
                                 </div>
                                 <div class="flex justify-between py-1">
-                                    <span class="text-slate-500 font-bold">Stock Restant Parpaings 20 :</span>
-                                    <span class="font-black text-indigo-600">${state.stocks.p20} blocs</span>
+                                    <span class="text-slate-500 font-bold">20# 砖剩余库存：</span>
+                                    <span class="font-black text-indigo-600">${state.stocks.p20} 块</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- TABLEAU DETAIL FACTURES DU JOUR -->
+                    <!-- 当日发票开具明细表 -->
                     <div class="border-2 border-slate-200 rounded-2xl p-6">
-                        <h3 class="font-black text-slate-900 uppercase text-xs mb-4">Détail des Factures Émises le ${formattedDate}</h3>
+                        <h3 class="font-black text-slate-900 uppercase text-xs mb-4">${formattedDate} 开具发票明细</h3>
                         <table class="w-full text-left text-xs">
                             <thead class="bg-slate-900 text-white uppercase text-[9px]">
                                 <tr>
-                                    <th class="p-2">Client</th>
-                                    <th class="p-2">Camion</th>
-                                    <th class="p-2 text-center">Produit</th>
-                                    <th class="p-2 text-center">Qté</th>
-                                    <th class="p-2 text-right">Total</th>
-                                    <th class="p-2 text-right">Avance</th>
-                                    <th class="p-2 text-right">Reste</th>
+                                    <th class="p-2">客户名称</th>
+                                    <th class="p-2">运输车牌</th>
+                                    <th class="p-2 text-center">型号</th>
+                                    <th class="p-2 text-center">数量</th>
+                                    <th class="p-2 text-right">总金额</th>
+                                    <th class="p-2 text-right">实付预付款</th>
+                                    <th class="p-2 text-right">欠款尾款</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 font-semibold">
@@ -1027,37 +1026,37 @@
                                     <tr>
                                         <td class="p-2 font-black">${v.client}</td>
                                         <td class="p-2 text-slate-500">${v.camion}</td>
-                                        <td class="p-2 text-center">P.${v.type}</td>
+                                        <td class="p-2 text-center">${v.type}# 砖</td>
                                         <td class="p-2 text-center">${v.qte}</td>
                                         <td class="p-2 text-right font-bold">${v.total.toLocaleString()} F</td>
                                         <td class="p-2 text-right text-emerald-600 font-bold">${v.avance.toLocaleString()} F</td>
                                         <td class="p-2 text-right text-red-600 font-bold">${v.reste.toLocaleString()} F</td>
                                     </tr>
-                                `).join('') : '<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Aucune vente enregistrée pour cette journée.</td></tr>'}
+                                `).join('') : '<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">本日暂无销售记录。</td></tr>'}
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- SIGNATURES ET CLOTURE -->
+                    <!-- 签字确认与结账栏 -->
                     <div class="pt-8 grid grid-cols-2 gap-12">
                         <div class="border-2 border-dashed border-slate-300 h-28 rounded-2xl p-4 flex flex-col justify-between">
-                            <span class="text-[9px] font-black uppercase text-slate-400">Signature du Secrétaire / Caissier</span>
-                            <span class="text-xs font-bold text-slate-300">Nom & Date</span>
+                            <span class="text-[9px] font-black uppercase text-slate-400">出纳 / 业务员签字</span>
+                            <span class="text-xs font-bold text-slate-300">姓名与日期</span>
                         </div>
                         <div class="border-2 border-dashed border-slate-300 h-28 rounded-2xl p-4 flex flex-col justify-between">
-                            <span class="text-[9px] font-black uppercase text-slate-400">Validation de la Direction</span>
-                            <span class="text-xs font-bold text-slate-300">Visa & Cachet</span>
+                            <span class="text-[9px] font-black uppercase text-slate-400">管理层审核批准</span>
+                            <span class="text-xs font-bold text-slate-300">签署与盖章</span>
                         </div>
                     </div>
 
-                    <!-- BOUTONS D'ACTION -->
+                    <!-- 操作按钮 -->
                     <div class="no-print pt-6 flex space-x-4">
                         <button onclick="window.print()" class="w-2/3 bg-slate-900 hover:bg-black text-white p-4 rounded-2xl font-black text-sm uppercase tracking-wider shadow-xl flex items-center justify-center space-x-2">
                             <i class="fas fa-print"></i>
-                            <span>Imprimer le Bilan Journalier (A4)</span>
+                            <span>打印日终结算表 (A4 纸)</span>
                         </button>
                         <button onclick="document.getElementById('bilan-print-zone').classList.add('hidden')" class="w-1/3 bg-slate-200 text-slate-800 p-4 rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-slate-300 transition">
-                            Fermer
+                            关闭
                         </button>
                     </div>
                 </div>
@@ -1067,52 +1066,52 @@
             document.getElementById('bilan-print-zone').classList.remove('hidden');
         }
 
-        // --- DEUX VOLETS IMPRESSION FACTURE ---
+        // --- 双联发票模版生成逻辑 ---
         function buildSingleReceipt(v, isSouche = false) {
             return `
                 <div class="border-2 border-slate-900 p-6 rounded-2xl bg-white font-sans relative">
                     <div class="absolute top-4 right-4 px-3 py-1 rounded-full bg-slate-900 text-white font-black text-[9px] uppercase tracking-widest">
-                        ${isSouche ? "EXEMPLAIRE SOUCHE (FABRIQUE)" : "EXEMPLAIRE CLIENT"}
+                        ${isSouche ? "厂方存根联 (FABRIQUE)" : "客户联 (CLIENT)"}
                     </div>
 
                     <div class="flex justify-between items-start mb-6 border-b border-slate-200 pb-4">
                         <div>
                             <h1 class="text-3xl font-black italic tracking-tight text-slate-900">SIGMA BLOCK</h1>
-                            <p class="text-blue-600 font-bold text-xs mt-0.5">REC—${v.id.toString().slice(-6)}</p>
+                            <p class="text-blue-600 font-bold text-xs mt-0.5">单据编号：REC—${v.id.toString().slice(-6)}</p>
                         </div>
                         <div class="text-right text-[10px] font-bold uppercase text-slate-600 leading-relaxed">
                             Sigma Block Fabrique<br>
-                            Parpaings Vibrés Haute Résistance<br>
-                            Douala, Cameroun
+                            高强度震动空心砖厂<br>
+                            喀麦隆 • 杜阿拉 (Douala)
                         </div>
                     </div>
 
                     <div class="bg-slate-50 p-4 rounded-xl mb-4 grid grid-cols-2 text-xs border border-slate-100">
                         <div>
-                            <p class="text-slate-400 uppercase text-[8px] font-black tracking-wider">Client</p>
+                            <p class="text-slate-400 uppercase text-[8px] font-black tracking-wider">客户名称</p>
                             <p class="font-black text-slate-900 text-sm">${v.client}</p>
-                            <p class="text-[10px] text-slate-500 font-bold">Camion: ${v.camion}</p>
+                            <p class="text-[10px] text-slate-500 font-bold">运输车牌: ${v.camion}</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-slate-400 uppercase text-[8px] font-black tracking-wider">Date d'Émission</p>
-                            <p class="font-black text-slate-900">${v.date_vente || new Date().toLocaleDateString('fr-FR')}</p>
+                            <p class="text-slate-400 uppercase text-[8px] font-black tracking-wider">开票日期</p>
+                            <p class="font-black text-slate-900">${v.date_vente || new Date().toLocaleDateString('zh-CN')}</p>
                         </div>
                     </div>
 
                     <table class="w-full mb-4 text-xs">
                         <thead>
                             <tr class="bg-slate-900 text-white text-[9px] uppercase tracking-wider">
-                                <th class="p-2 text-left rounded-l">Désignation</th>
-                                <th class="p-2 text-center">P.U</th>
-                                <th class="p-2 text-center">Qté</th>
-                                <th class="p-2 text-right rounded-r">Total</th>
+                                <th class="p-2 text-left rounded-l">货物名称与规格</th>
+                                <th class="p-2 text-center">单价</th>
+                                <th class="p-2 text-center">数量</th>
+                                <th class="p-2 text-right rounded-r">金额小计</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="border-b font-bold text-slate-800">
-                                <td class="p-2.5">Parpaing de ${v.type} Vibré</td>
+                                <td class="p-2.5">${v.type}# 高强度震动空心砖</td>
                                 <td class="p-2.5 text-center">${v.prix} FCFA</td>
-                                <td class="p-2.5 text-center">${v.qte}</td>
+                                <td class="p-2.5 text-center">${v.qte} 块</td>
                                 <td class="p-2.5 text-right font-black">${v.total.toLocaleString()} FCFA</td>
                             </tr>
                         </tbody>
@@ -1120,22 +1119,22 @@
 
                     <div class="flex justify-end space-y-1 flex-col items-end border-t border-slate-200 pt-3 text-xs">
                         <div class="flex justify-between w-48 text-[11px]">
-                            <span class="font-bold text-slate-500">Montant Total :</span>
+                            <span class="font-bold text-slate-500">应付总金额：</span>
                             <span class="font-black text-slate-900">${v.total.toLocaleString()} FCFA</span>
                         </div>
                         <div class="flex justify-between w-48 text-emerald-600 text-[11px] font-bold">
-                            <span>Avance Versée :</span>
+                            <span>已付预付款：</span>
                             <span>- ${v.avance.toLocaleString()} FCFA</span>
                         </div>
                         <div class="flex justify-between w-48 text-base font-black text-red-600 border-t-2 border-slate-900 pt-1">
-                            <span>RESTE :</span>
+                            <span>尚欠尾款：</span>
                             <span>${v.reste.toLocaleString()} FCFA</span>
                         </div>
                     </div>
 
                     <div class="mt-6 grid grid-cols-2 gap-6">
-                        <div class="border border-slate-300 h-16 rounded-xl flex items-end justify-center pb-1 text-[8px] font-bold text-slate-400 uppercase">Signature Client</div>
-                        <div class="border border-slate-300 h-16 rounded-xl flex items-end justify-center pb-1 text-[8px] font-bold text-slate-400 uppercase">La Direction</div>
+                        <div class="border border-slate-300 h-16 rounded-xl flex items-end justify-center pb-1 text-[8px] font-bold text-slate-400 uppercase">客户提货签字</div>
+                        <div class="border border-slate-300 h-16 rounded-xl flex items-end justify-center pb-1 text-[8px] font-bold text-slate-400 uppercase">开单主管 / 厂方盖章</div>
                     </div>
                 </div>
             `;
@@ -1147,17 +1146,17 @@
                     ${buildSingleReceipt(v, false)}
                     <div class="relative flex py-2 items-center">
                         <div class="flex-grow border-t-2 border-dashed border-slate-300"></div>
-                        <span class="flex-shrink mx-4 text-slate-400 text-[10px] font-black uppercase tracking-widest"><i class="fas fa-scissors mr-1"></i> Ligne de Découpe</span>
+                        <span class="flex-shrink mx-4 text-slate-400 text-[10px] font-black uppercase tracking-widest"><i class="fas fa-scissors mr-1"></i> 沿剪刀线撕开</span>
                         <div class="flex-grow border-t-2 border-dashed border-slate-300"></div>
                     </div>
                     ${buildSingleReceipt(v, true)}
                     <div class="no-print pt-4 space-y-2">
                         <button onclick="window.print()" class="w-full bg-slate-900 text-white p-4 rounded-xl font-black text-lg hover:bg-black transition shadow-lg flex items-center justify-center space-x-2">
                             <i class="fas fa-print"></i>
-                            <span>IMPRIMER LES 2 VOLETS (CLIENT + SOUCHE)</span>
+                            <span>打印双联发票（客户联 + 厂方存根）</span>
                         </button>
                         <button onclick="document.getElementById('facture-zone').classList.add('hidden')" class="w-full text-slate-500 text-xs uppercase font-bold underline text-center block py-2">
-                            Fermer
+                            关闭
                         </button>
                     </div>
                 </div>
@@ -1165,7 +1164,7 @@
             document.getElementById('facture-zone').classList.remove('hidden');
         }
 
-        // INIT
+        // 初始化
         updatePrixVente();
         calculerPaieChef();
         loadDataFromSupabase();
