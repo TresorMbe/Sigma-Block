@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sigma Block Manager | Pro Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- SDK SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: white !important; }
+            #facture-zone, #bilan-print-zone { display: block !important; position: absolute; top: 0; left: 0; width: 100%; padding: 0 !important; } 
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
+        .stat-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); }
+    </style>
+</head>
+<body class="bg-slate-100/80 text-slate-900 antialiased min-h-screen flex flex-col">
+
+    <!-- NAVIGATION -->
+    <nav class="bg-slate-950 text-white p-4 shadow-2xl sticky top-0 z-40 no-print border-b border-slate-800">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2.5 rounded-2xl shadow-lg shadow-blue-500/30">
+                    <i class="fas fa-cubes text-lg"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-black tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">Sigma <span class="text-blue-500">Pro</span></span>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest -mt-1">Gestion Industrielle & Stocks</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-2 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800/80">
+                <button onclick="switchTab('prod')" id="btn-tab-prod" class="px-4 py-2 rounded-xl transition font-bold text-xs uppercase tracking-wider flex items-center space-x-2 bg-blue-600 text-white shadow-lg shadow-blue-600/30">
+                    <i class="fas fa-hammer text-xs"></i>
+                    <span>Production</span>
+                </button>
+                <button onclick="switchTab('sec')" id="btn-tab-sec" class="px-4 py-2 rounded-xl transition font-bold text-xs uppercase tracking-wider text-slate-400 hover:text-white hover:bg-slate-800 flex items-center space-x-2">
+                    <i class="fas fa-receipt text-xs"></i>
+                    <span>Ventes & Stocks</span>
+                </button>
+                <button onclick="switchTab('stats')" id="btn-tab-stats" class="px-4 py-2 rounded-xl transition font-bold text-xs uppercase tracking-wider text-slate-400 hover:text-white hover:bg-slate-800 flex items-center space-x-2">
+                    <i class="fas fa-chart-pie text-xs"></i>
+                    <span>Analytics</span>
+                </button>
+                <button onclick="ouvrirModalBilan()" id="btn-bilan" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition font-bold text-xs uppercase tracking-wider flex items-center space-x-2 shadow-lg shadow-emerald-600/30 ml-2">
+                    <i class="fas fa-file-invoice-dollar text-xs"></i>
+                    <span>Bilan du Jour</span>
+                </button>
+                <button id="btn-logout" onclick="logout()" class="hidden px-3 py-2 rounded-xl text-red-400 hover:bg-red-500/10 transition font-bold text-xs uppercase tracking-wider ml-1" title="DÃ©connexion SecrÃ©tariat">
+                    <i class="fas fa-power-off"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 no-print">
+
+        <!-- ECRAN DE VERROUILLAGE / MOT DE PASSE -->
+        <section id="tab-auth" class="tab-content py-12">
+            <div class="max-w-md mx-auto">
+                <div class="glass-panel p-8 sm:p-10 rounded-3xl shadow-2xl border border-slate-200/80 text-center relative overflow-hidden">
+                    <div class="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                    <div class="w-20 h-20 bg-gradient-to-tr from-slate-900 to-blue-900 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-950/20 text-2xl">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Espace SÃ©curisÃ©</h2>
+                    <p class="text-xs font-semibold text-slate-500 mt-2 mb-8">Veuillez saisir le code d'accÃ¨s de la Direction pour continuer.</p>
+                    
+                    <form onsubmit="verifierMotDePasse(event)" class="space-y-4">
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password" id="auth-password" placeholder="Mot de passe..." class="w-full pl-11 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl font-bold outline-none focus:border-blue-600 focus:bg-white transition-all text-slate-800 text-center text-lg tracking-widest placeholder:text-sm placeholder:tracking-normal">
+                        </div>
+                        <p id="auth-error" class="hidden text-xs font-bold text-red-500 bg-red-50 py-2 rounded-xl border border-red-100"><i class="fas fa-exclamation-circle mr-1"></i> Mot de passe incorrect !</p>
+                        <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-2xl shadow-xl shadow-slate-900/20 transition-all uppercase tracking-wider text-xs">
+                            DÃ©verrouiller l'Espace
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION PRODUCTION -->
+        <section id="tab-prod" class="tab-content active space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- CARTE PORTEFEUILLE GAINS -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 p-8 rounded-3xl shadow-2xl text-white relative overflow-hidden border border-slate-800">
+                        <div class="absolute -right-6 -bottom-6 text-9xl text-blue-500/10 pointer-events-none">
+                            <i class="fas fa-sack-dollar"></i>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-[10px] font-black tracking-widest text-blue-300 uppercase">BarÃ¨me Dynamique</span>
+                            <span id="p-jour-label" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--/--/----</span>
+                        </div>
+                        <p class="text-xs font-bold uppercase text-slate-400 tracking-wider">Main d'Åuvre EstimÃ©e (Session)</p>
+                        <h2 id="p-gains-live" class="text-5xl font-black mt-2 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-200">0 FCFA</h2>
+                        
+                        <div class="mt-8 pt-6 border-t border-slate-800 grid grid-cols-2 gap-4 text-xs">
+                            <div>
+                                <p class="text-slate-400 text-[10px] uppercase font-bold">Rendement ThÃ©orique</p>
+                                <p id="p-rendement-theo" class="font-black text-slate-200 text-sm mt-0.5">0 palettes</p>
+                            </div>
+                            <div>
+                                <p class="text-slate-400 text-[10px] uppercase font-bold">Net Intact AjoutÃ© au Stock</p>
+                                <p id="p-total-parpaings" class="font-black text-blue-400 text-sm mt-0.5">0 blocs</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GUIDES & REGLES -->
+                    <div class="glass-panel p-6 rounded-3xl shadow-lg space-y-3">
+                        <h4 class="font-black text-xs uppercase tracking-wider text-slate-500 flex items-center">
+                            <i class="fas fa-info-circle mr-2 text-blue-500"></i> Rappel du BarÃ¨me de Paie
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                                <p class="font-black text-slate-800">Parpaing de 15</p>
+                                <ul class="text-[10px] text-slate-600 mt-1 space-y-0.5 font-medium">
+                                    <li>1 - 35 sacs : <strong class="text-slate-900">1000F</strong></li>
+                                    <li>36 - 55 sacs : <strong class="text-slate-900">2000F</strong></li>
+                                    <li>56+ sacs : <strong class="text-slate-900">3000F</strong></li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                                <p class="font-black text-slate-800">Parpaing de 20</p>
+                                <ul class="text-[10px] text-slate-600 mt-1 space-y-0.5 font-medium">
+                                    <li>1 - 30 sacs : <strong class="text-slate-900">1000F</strong></li>
+                                    <li>31 - 50 sacs : <strong class="text-slate-900">2000F</strong></li>
+                                    <li>51+ sacs : <strong class="text-slate-900">3000F</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORMULAIRE SAISIE PRODUCTION -->
+                <div class="lg:col-span-7">
+                    <div class="glass-panel p-8 sm:p-10 rounded-3xl shadow-xl border border-slate-200 space-y-6">
+                        <div class="border-b pb-4 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-black text-xl uppercase tracking-tight text-slate-900">Saisie de Production</h3>
+                                <p class="text-xs text-slate-500 font-medium">1 parpaing cassÃ© = -50 FCFA sur la main d'Åuvre</p>
+                            </div>
+                            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-black text-[10px] rounded-full uppercase tracking-wider">Ãquipe Unique</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Type de Parpaing Produit</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="p-type-radio" value="15" checked onchange="document.getElementById('p-type').value=15; calculerPaieChef();" class="peer sr-only">
+                                        <div class="p-4 rounded-2xl border-2 border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50/50 text-center font-black transition-all">
+                                            <p class="text-lg text-slate-800">Parpaing de 15</p>
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">5 blocs/planche â¢ ~9.5 pal/sac</p>
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="p-type-radio" value="20" onchange="document.getElementById('p-type').value=20; calculerPaieChef();" class="peer sr-only">
+                                        <div class="p-4 rounded-2xl border-2 border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50/50 text-center font-black transition-all">
+                                            <p class="text-lg text-slate-800">Parpaing de 20</p>
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">3 blocs/planche â¢ ~12.5 pal/sac</p>
+                                        </div>
+                                    </label>
+                                </div>
+                                <select id="p-type" onchange="calculerPaieChef()" class="hidden">
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Nombre de sacs de ciment cuits</label>
+                                <input type="number" id="p-sacs" oninput="calculerPaieChef()" class="w-full p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-4xl font-black text-blue-900 outline-none focus:border-blue-600 focus:bg-white transition-all placeholder:text-slate-300" placeholder="0">
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Palettes RÃ©elles Obtenues</label>
+                                    <input type="number" id="p-reelles" oninput="calculerPaieChef()" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl font-black text-xl text-slate-800 outline-none focus:border-blue-600 focus:bg-white transition-all placeholder:text-slate-300" placeholder="0">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-red-500 uppercase tracking-wider mb-1"><i class="fas fa-heart-crack mr-1"></i> Parpaings CassÃ©s (Pertes)</label>
+                                    <input type="number" id="p-casses" oninput="calculerPaieChef()" class="w-full p-4 bg-red-50/50 border-2 border-red-200 rounded-2xl font-black text-xl text-red-600 outline-none focus:border-red-500 focus:bg-white transition-all placeholder:text-red-300" placeholder="0">
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200/80 flex justify-between items-center">
+                                <span class="text-xs font-black text-slate-500 uppercase">PrÃ©cision du Rendement :</span>
+                                <span id="p-prec-label" class="text-2xl font-black text-slate-400">--%</span>
+                            </div>
+                        </div>
+
+                        <button onclick="sauvegarderSession()" class="w-full bg-slate-900 hover:bg-black text-white font-black py-5 rounded-2xl shadow-xl shadow-slate-900/20 transition-all uppercase tracking-wider text-xs flex items-center justify-center space-x-2">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Valider la Session (+ Enregistrer en Stock Intact)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION VENTES & STOCKS -->
+        <section id="tab-sec" class="tab-content space-y-8">
+            
+            <!-- VUE MULTI-STOCKS REELS -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <!-- STOCK CIMENT -->
+                <div class="glass-panel p-6 rounded-3xl shadow-lg border-l-8 border-orange-500 relative overflow-hidden flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Stock Ciment</span>
+                        <p id="s-ciment" class="text-3xl font-black text-slate-900 mt-1">0 <span class="text-xs text-slate-400 font-bold">sacs</span></p>
+                        <button onclick="ouvrirModalCiment()" class="mt-3 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-[10px] font-black uppercase tracking-wider shadow-md shadow-orange-500/20 transition-all flex items-center space-x-1">
+                            <i class="fas fa-plus"></i>
+                            <span>Approvisionner</span>
+                        </button>
+                    </div>
+                    <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fas fa-cubes-stacked"></i>
+                    </div>
+                </div>
+
+                <!-- STOCK PARPAING 15 -->
+                <div class="glass-panel p-6 rounded-3xl shadow-lg border-l-8 border-blue-600 flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Stock Parpaings 15</span>
+                        <p id="s-p15" class="text-3xl font-black text-blue-600 mt-1">0 <span class="text-xs text-slate-400 font-bold">blocs</span></p>
+                        <p class="text-[10px] text-slate-400 font-bold mt-2">AlimentÃ© par la production</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                </div>
+
+                <!-- STOCK PARPAING 20 -->
+                <div class="glass-panel p-6 rounded-3xl shadow-lg border-l-8 border-indigo-600 flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Stock Parpaings 20</span>
+                        <p id="s-p20" class="text-3xl font-black text-indigo-600 mt-1">0 <span class="text-xs text-slate-400 font-bold">blocs</span></p>
+                        <p class="text-[10px] text-slate-400 font-bold mt-2">AlimentÃ© par la production</p>
+                    </div>
+                    <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fas fa-boxes-stacked"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- FORMULAIRE DE VENTE -->
+                <div class="lg:col-span-5">
+                    <div class="glass-panel p-8 rounded-3xl shadow-xl border border-slate-200 space-y-4">
+                        <h3 class="font-black text-xl border-b pb-4 uppercase tracking-tight text-slate-900">Nouvelle Vente</h3>
+                        
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Nom du Client</label>
+                            <input type="text" id="v-client" placeholder="ex: Entreprise ABC" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-800 focus:bg-white focus:border-blue-600 transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Matricule Camion / Chauffeur</label>
+                            <input type="text" id="v-camion" placeholder="ex: LT 123 AB" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-800 focus:bg-white focus:border-blue-600 transition-all">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Produit</label>
+                                <select id="v-type" onchange="updatePrixVente()" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 outline-none focus:border-blue-600">
+                                    <option value="15">Parpaing 15</option>
+                                    <option value="20">Parpaing 20</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Prix Unitaire</label>
+                                <select id="v-prix" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-black text-blue-600 outline-none focus:border-blue-600"></select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">QuantitÃ© Ã  Sortir du Stock</label>
+                            <input type="number" id="v-qte" oninput="calculerResteVente()" placeholder="0" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-2xl font-black text-slate-900 outline-none focus:border-blue-600 focus:bg-white transition-all">
+                        </div>
+                        
+                        <div class="bg-blue-50/70 p-5 rounded-2xl space-y-3 border border-blue-100">
+                            <div>
+                                <label class="block text-[10px] font-black text-blue-800 uppercase tracking-wider mb-1">Avance VersÃ©e (FCFA)</label>
+                                <input type="number" id="v-avance" oninput="calculerResteVente()" placeholder="0" class="w-full p-3 bg-white border border-blue-200 rounded-xl font-black text-slate-900 text-lg outline-none focus:border-blue-600">
+                            </div>
+                            <div class="flex justify-between items-center text-sm border-t border-blue-200/80 pt-3">
+                                <span class="font-black text-slate-500 uppercase text-[10px]">Reste Ã  Payer :</span>
+                                <span id="v-reste-label" class="font-black text-xl text-red-600">0 FCFA</span>
+                            </div>
+                        </div>
+
+                        <button onclick="enregistrerEtFacturer()" class="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-xl shadow-lg transition-all uppercase tracking-wider text-xs flex items-center justify-center space-x-2">
+                            <i class="fas fa-print"></i>
+                            <span>DÃ©duire du Stock & Ãditer le ReÃ§u</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- HISTORIQUE DES VENTES TABLEAU -->
+                <div class="lg:col-span-7">
+                    <div class="glass-panel p-8 rounded-3xl shadow-xl border border-slate-200 space-y-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4">
+                            <h3 class="font-black text-xl uppercase tracking-tight text-slate-900">Historique des Factures</h3>
+                            <div class="relative w-full sm:w-64">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                    <i class="fas fa-search text-xs"></i>
+                                </span>
+                                <input type="text" id="search-client" oninput="filterHistorique()" placeholder="Chercher un client..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-blue-600 focus:bg-white">
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-100/80 text-[10px] uppercase text-slate-400 font-black tracking-wider">
+                                    <tr>
+                                        <th class="p-4 rounded-l-xl">Date</th>
+                                        <th class="p-4">Client / Camion</th>
+                                        <th class="p-4 text-center">QtÃ©</th>
+                                        <th class="p-4 text-right">Total</th>
+                                        <th class="p-4 text-right">Reste</th>
+                                        <th class="p-4 text-center rounded-r-xl">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-historique" class="font-medium divide-y divide-slate-100">
+                                    <!-- InjectÃ© par JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION ANALYTICS / STATS -->
+        <section id="tab-stats" class="tab-content space-y-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card glass-panel p-6 rounded-3xl shadow-lg border-b-4 border-blue-600">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Chiffre d'Affaires CumulÃ©</p>
+                    <p id="stat-ca" class="text-3xl font-black text-slate-900 mt-2">0 F</p>
+                </div>
+                <div class="stat-card glass-panel p-6 rounded-3xl shadow-lg border-b-4 border-red-500">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Total CrÃ©dits en Souffrance</p>
+                    <p id="stat-credits" class="text-3xl font-black text-red-600 mt-2">0 F</p>
+                </div>
+                <div class="stat-card glass-panel p-6 rounded-3xl shadow-lg border-b-4 border-emerald-500">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Produit le Plus Vendu</p>
+                    <p id="stat-best-seller" class="text-3xl font-black text-emerald-600 mt-2">-</p>
+                </div>
+                <div class="stat-card glass-panel p-6 rounded-3xl shadow-lg border-b-4 border-orange-500">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">PrÃ©cision Moyenne Usine</p>
+                    <p id="stat-precision" class="text-3xl font-black text-orange-500 mt-2">0%</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-panel p-8 rounded-3xl shadow-xl border border-slate-200">
+                    <h3 class="font-black text-lg mb-6 uppercase tracking-tight text-slate-900">Total Sacs de Ciment ConsommÃ©s</h3>
+                    <div id="hebdo-bars" class="space-y-4"></div>
+                </div>
+
+                <div class="glass-panel p-8 rounded-3xl shadow-xl border border-slate-200">
+                    <h3 class="font-black text-lg mb-6 uppercase tracking-tight text-slate-900">Part de Ventes par Produit</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between text-xs font-black mb-2">
+                                <span>PARPAING DE 15</span>
+                                <span id="label-v15" class="text-blue-600">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden p-0.5">
+                                <div id="bar-v15" class="bg-blue-600 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-black mb-2">
+                                <span>PARPAING DE 20</span>
+                                <span id="label-v20" class="text-orange-500">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden p-0.5">
+                                <div id="bar-v20" class="bg-orange-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel p-8 rounded-3xl shadow-xl border border-slate-200">
+                <h3 class="font-black text-lg mb-6 uppercase tracking-tight text-slate-900">Top Clients (Classement par Chiffre d'Affaires)</h3>
+                <div id="top-clients-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODALE SELECTION DATE BILAN JOURNALIER -->
+    <div id="modal-bilan" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="glass-panel p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 relative animate-in fade-in zoom-in duration-200">
+            <h3 class="font-black text-xl uppercase tracking-tight text-slate-900 mb-2">Bilan Journalier & ClÃ´ture</h3>
+            <p class="text-xs text-slate-500 font-semibold mb-6">SÃ©lectionnez la date pour gÃ©nÃ©rer le rapport consolidÃ© des ventes, productions et casses.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Date du bilan</label>
+                    <input type="date" id="bilan-date-input" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-lg font-black text-slate-900 outline-none focus:border-blue-600 focus:bg-white transition-all">
+                </div>
+                
+                <div class="flex space-x-3 pt-2">
+                    <button onclick="fermerModalBilan()" class="w-1/2 py-3.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black rounded-xl text-xs uppercase tracking-wider transition-all">
+                        Annuler
+                    </button>
+                    <button onclick="genererRapportBilan()" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center space-x-2">
+                        <i class="fas fa-calculator"></i>
+                        <span>GÃ©nÃ©rer Bilan</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE CIMENT (REAPPROVISIONNEMENT) -->
+    <div id="modal-ciment" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="glass-panel p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 relative animate-in fade-in zoom-in duration-200">
+            <h3 class="font-black text-xl uppercase tracking-tight text-slate-900 mb-2">Approvisionnement Ciment</h3>
+            <p class="text-xs text-slate-500 font-semibold mb-6">Ajouter de nouveaux sacs de ciment au stock actuel de l'usine.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Nombre de sacs reÃ§us</label>
+                    <input type="number" id="ciment-ajout-input" placeholder="ex: 200" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-2xl font-black text-slate-900 outline-none focus:border-blue-600 focus:bg-white transition-all">
+                </div>
+                
+                <div class="flex space-x-3 pt-2">
+                    <button onclick="fermerModalCiment()" class="w-1/2 py-3.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black rounded-xl text-xs uppercase tracking-wider transition-all">
+                        Annuler
+                    </button>
+                    <button onclick="ajouterStockCiment()" class="w-1/2 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-orange-500/30">
+                        Ajouter au Stock
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ZONE FACTURE DOUBLE (CLIENT + SOUCHE) -->
+    <div id="facture-zone" class="hidden fixed inset-0 bg-white p-6 z-[100] overflow-auto"></div>
+
+    <!-- ZONE RAPPORT BILAN JOURNALIER IMPRIMABLE -->
+    <div id="bilan-print-zone" class="hidden fixed inset-0 bg-white p-8 z-[100] overflow-auto"></div>
+
+    <!-- SCRIPT APPLICATION -->
+    <script>
+        // CONFIGURATION SUPABASE
+        const SUPABASE_URL = "https://cjyevxeixlulsbgaiphs.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_-bZntjVr4uX3YH9WHR6rcg_r-4DA53x";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // AUTHENTIFICATION STATE
+        let isAuthenticated = false;
+        let pendingTab = null;
+
+        let state = {
+            prod_logs: [],
+            ventes: [],
+            stocks: { ciment: 500, p15: 1000, p20: 1000 }
+        };
+
+        // --- GESTION DE LA SÃCURITÃ ---
+        function verifierMotDePasse(e) {
+            e.preventDefault();
+            const pass = document.getElementById('auth-password').value;
+            if (pass === "parpaings@2026") {
+                isAuthenticated = true;
+                document.getElementById('auth-error').classList.add('hidden');
+                document.getElementById('btn-logout').classList.remove('hidden');
+                document.getElementById('auth-password').value = '';
+                
+                if (pendingTab) {
+                    const target = pendingTab;
+                    pendingTab = null;
+                    switchTab(target);
+                } else {
+                    switchTab('sec');
+                }
+            } else {
+                document.getElementById('auth-error').classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            isAuthenticated = false;
+            document.getElementById('btn-logout').classList.add('hidden');
+            switchTab('prod');
+        }
+
+        function switchTab(t) {
+            if ((t === 'sec' || t === 'stats') && !isAuthenticated) {
+                pendingTab = t;
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById('tab-auth').classList.add('active');
+                updateNavStyles('auth');
+                return;
+            }
+
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + t).classList.add('active');
+            
+            updateNavStyles(t);
+
+            renderDashboard();
+            if(t === 'sec') renderHistorique();
+            if(t === 'stats') renderAnalytics();
+        }
+
+        function updateNavStyles(activeTab) {
+            ['prod', 'sec', 'stats'].forEach(tab => {
+                const btn = document.getElementById('btn-tab-' + tab);
+                if (btn) {
+                    if (tab === activeTab) {
+                        btn.className = "px-4 py-2 rounded-xl transition font-bold text-xs uppercase tracking-wider flex items-center space-x-2 bg-blue-600 text-white shadow-lg shadow-blue-600/30";
+                    } else {
+                        btn.className = "px-4 py-2 rounded-xl transition font-bold text-xs uppercase tracking-wider text-slate-400 hover:text-white hover:bg-slate-800 flex items-center space-x-2";
+                    }
+                }
+            });
+        }
+
+        // --- CHARGEMENT SUPABASE ---
+        async function loadDataFromSupabase() {
+            try {
+                const { data: ventesData } = await _supabase.from('ventes').select('*').order('id', { ascending: false });
+                if (ventesData) state.ventes = ventesData;
+
+                const { data: prodData } = await _supabase.from('production_logs').select('*').order('id', { ascending: false });
+                if (prodData) state.prod_logs = prodData;
+
+                const { data: stocksData } = await _supabase.from('stocks').select('*').eq('id', 1).single();
+                if (stocksData) state.stocks = stocksData;
+
+                renderDashboard();
+                renderHistorique();
+            } catch (err) {
+                console.error("Erreur Supabase:", err);
+            }
+        }
+
+        // --- BAREME PAIE PAR PALIERS ---
+        function calculerPaie(sacs, type) {
+            let total = 0;
+            let s = parseFloat(sacs) || 0;
+            let t = parseInt(type) || 15;
+
+            if (t === 15) {
+                if (s <= 35) total = s * 1000;
+                else if (s <= 55) total = (35 * 1000) + ((s - 35) * 2000);
+                else total = (35 * 1000) + (20 * 2000) + ((s - 55) * 3000);
+            } else if (t === 20) {
+                if (s <= 30) total = s * 1000;
+                else if (s <= 50) total = (30 * 1000) + ((s - 30) * 2000);
+                else total = (30 * 1000) + (20 * 2000) + ((s - 50) * 3000);
+            }
+
+            return total;
+        }
+
+        function calculerPaieChef() {
+            const sacs = parseFloat(document.getElementById('p-sacs').value) || 0;
+            const reelles = parseFloat(document.getElementById('p-reelles').value) || 0;
+            const casses = parseFloat(document.getElementById('p-casses').value) || 0;
+            const type = document.getElementById('p-type').value;
+            
+            // Paie brute basÃ©e sur les sacs
+            const paieBrute = calculerPaie(sacs, type);
+            // DÃ©duction de 50 FCFA par parpaing cassÃ©
+            const paieNette = Math.max(0, paieBrute - (casses * 50));
+
+            document.getElementById('p-gains-live').innerText = paieNette.toLocaleString() + " FCFA";
+            
+            const theoRatio = type === "15" ? 9.5 : 12.5;
+            const theoPalettes = (sacs * theoRatio).toFixed(1);
+            
+            const totalBrut = reelles * (type === "15" ? 5 : 3);
+            const totalNetIntact = Math.max(0, totalBrut - casses);
+
+            document.getElementById('p-rendement-theo').innerText = theoPalettes + " palettes";
+            document.getElementById('p-total-parpaings').innerText = totalNetIntact.toLocaleString() + " blocs";
+
+            if (sacs > 0) {
+                let precision = ((reelles / theoPalettes) * 100).toFixed(1);
+                document.getElementById('p-prec-label').innerText = precision + "%";
+                document.getElementById('p-prec-label').className = precision >= 100 ? "text-2xl font-black text-emerald-600" : "text-2xl font-black text-amber-500";
+            } else {
+                document.getElementById('p-prec-label').innerText = "--%";
+                document.getElementById('p-prec-label').className = "text-2xl font-black text-slate-400";
+            }
+        }
+
+        async function sauvegarderSession() {
+            const sacs = parseFloat(document.getElementById('p-sacs').value);
+            const reelles = parseFloat(document.getElementById('p-reelles').value);
+            const casses = parseFloat(document.getElementById('p-casses').value) || 0;
+            const type = document.getElementById('p-type').value;
+
+            if(!sacs || !reelles) return alert("Veuillez saisir le nombre de sacs et de palettes rÃ©elles !");
+
+            const blocksBruts = type === "15" ? reelles * 5 : reelles * 3;
+            const blocksNetIntacts = Math.max(0, blocksBruts - casses);
+
+            const newCiment = Math.max(0, (state.stocks.ciment || 0) - sacs);
+            const newP15 = type === "15" ? (state.stocks.p15 || 0) + blocksNetIntacts : (state.stocks.p15 || 0);
+            const newP20 = type === "20" ? (state.stocks.p20 || 0) + blocksNetIntacts : (state.stocks.p20 || 0);
+
+            const paieNette = Math.max(0, calculerPaie(sacs, type) - (casses * 50));
+
+            const newLog = { 
+                sacs, 
+                reelles, 
+                casses,
+                type: parseInt(type), 
+                paie: paieNette
+            };
+
+            await _supabase.from('production_logs').insert([newLog]);
+            await _supabase.from('stocks').update({ ciment: newCiment, p15: newP15, p20: newP20 }).eq('id', 1);
+
+            alert(`Session enregistrÃ©e ! +${blocksNetIntacts.toLocaleString()} parpaings intacts ajoutÃ©s au stock (${casses} cassÃ©s dÃ©duits).`);
+            
+            document.getElementById('p-sacs').value = '';
+            document.getElementById('p-reelles').value = '';
+            document.getElementById('p-casses').value = '';
+            calculerPaieChef();
+            await loadDataFromSupabase();
+        }
+
+        // --- GESTION APPROVISIONNEMENT CIMENT ---
+        function ouvrirModalCiment() {
+            document.getElementById('modal-ciment').classList.remove('hidden');
+        }
+
+        function fermerModalCiment() {
+            document.getElementById('modal-ciment').classList.add('hidden');
+            document.getElementById('ciment-ajout-input').value = '';
+        }
+
+        async function ajouterStockCiment() {
+            const ajout = parseFloat(document.getElementById('ciment-ajout-input').value);
+            if (!ajout || ajout <= 0) return alert("Veuillez entrer un nombre valide de sacs !");
+
+            const nouveauTotal = (state.stocks.ciment || 0) + ajout;
+            
+            await _supabase.from('stocks').update({ ciment: nouveauTotal }).eq('id', 1);
+            
+            alert(`Stock mis Ã  jour ! +${ajout} sacs de ciment ajoutÃ©s.`);
+            fermerModalCiment();
+            await loadDataFromSupabase();
+        }
+
+        // --- GESTION DES VENTES & DÃDUCTION DE STOCK ---
+        function updatePrixVente() {
+            const t = document.getElementById('v-type').value;
+            const select = document.getElementById('v-prix');
+            const prix = t === "15" ? [290, 295, 300] : [390, 395, 400];
+            select.innerHTML = prix.map(p => `<option value="${p}">${p} FCFA</option>`).join('');
+            calculerResteVente();
+        }
+
+        function calculerResteVente() {
+            const qte = parseFloat(document.getElementById('v-qte').value) || 0;
+            const prix = parseFloat(document.getElementById('v-prix').value) || 0;
+            const avance = parseFloat(document.getElementById('v-avance').value) || 0;
+            const reste = (qte * prix) - avance;
+            document.getElementById('v-reste-label').innerText = Math.max(0, reste).toLocaleString() + " FCFA";
+        }
+
+        async function enregistrerEtFacturer() {
+            const client = document.getElementById('v-client').value || "Client Comptant";
+            const camion = document.getElementById('v-camion').value || "N/A";
+            const qte = parseFloat(document.getElementById('v-qte').value) || 0;
+            const prix = parseFloat(document.getElementById('v-prix').value) || 0;
+            const avance = parseFloat(document.getElementById('v-avance').value) || 0;
+            const type = document.getElementById('v-type').value;
+            
+            if(qte <= 0) return alert("Veuillez entrer une quantitÃ© valide.");
+
+            const currentStock = type === "15" ? state.stocks.p15 : state.stocks.p20;
+            if (qte > currentStock) {
+                if(!confirm(`Attention : La quantitÃ© demandÃ©e (${qte}) dÃ©passe le stock de parpaings de ${type} disponible (${currentStock}). Voulez-vous quand mÃªme forcer la sortie ?`)) {
+                    return;
+                }
+            }
+
+            const nouvelleVente = {
+                client,
+                camion,
+                type,
+                qte,
+                prix,
+                total: qte * prix,
+                avance,
+                reste: (qte * prix) - avance
+            };
+
+            const newP15 = type === "15" ? Math.max(0, state.stocks.p15 - qte) : state.stocks.p15;
+            const newP20 = type === "20" ? Math.max(0, state.stocks.p20 - qte) : state.stocks.p20;
+
+            const { data } = await _supabase.from('ventes').insert([nouvelleVente]).select();
+            await _supabase.from('stocks').update({ p15: newP15, p20: newP20 }).eq('id', 1);
+            
+            if(data && data.length > 0) {
+                genererFactureHTML(data[0]);
+            }
+
+            document.getElementById('v-client').value = '';
+            document.getElementById('v-camion').value = '';
+            document.getElementById('v-qte').value = '';
+            document.getElementById('v-avance').value = '';
+            calculerResteVente();
+            await loadDataFromSupabase();
+        }
+
+        function renderHistorique() {
+            const table = document.getElementById('table-historique');
+            table.innerHTML = state.ventes.map(v => `
+                <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition">
+                    <td class="p-4 text-[10px] text-slate-400 font-bold">${v.date_vente || ''}</td>
+                    <td class="p-4">
+                        <div class="font-black text-slate-800">${v.client}</div>
+                        <div class="text-[10px] text-slate-400 italic">${v.camion}</div>
+                    </td>
+                    <td class="p-4 text-center font-bold text-slate-600">${v.qte} (${v.type})</td>
+                    <td class="p-4 text-right font-black text-slate-900">${v.total.toLocaleString()} F</td>
+                    <td class="p-4 text-right font-black ${v.reste > 0 ? 'text-red-500' : 'text-emerald-500'}">
+                        ${v.reste.toLocaleString()} F
+                    </td>
+                    <td class="p-4 text-center">
+                        <button onclick="reimprimer(${v.id})" class="text-blue-600 hover:text-blue-800 p-1.5 rounded-lg hover:bg-blue-50 transition"><i class="fas fa-print"></i></button>
+                        <button onclick="supprimerVente(${v.id})" class="text-slate-300 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition"><i class="fas fa-trash text-xs"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function supprimerVente(id) {
+            if(confirm("Voulez-vous vraiment supprimer cette facture ?")) {
+                await _supabase.from('ventes').delete().eq('id', id);
+                await loadDataFromSupabase();
+            }
+        }
+
+        function reimprimer(id) {
+            const v = state.ventes.find(v => v.id === id);
+            if(v) genererFactureHTML(v);
+        }
+
+        function filterHistorique() {
+            const query = document.getElementById('search-client').value.toLowerCase();
+            const filtered = state.ventes.filter(v => v.client.toLowerCase().includes(query));
+            const table = document.getElementById('table-historique');
+            table.innerHTML = filtered.map(v => `
+                <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition">
+                    <td class="p-4 text-[10px] text-slate-400 font-bold">${v.date_vente || ''}</td>
+                    <td class="p-4">
+                        <div class="font-black text-slate-800">${v.client}</div>
+                        <div class="text-[10px] text-slate-400 italic">${v.camion}</div>
+                    </td>
+                    <td class="p-4 text-center font-bold text-slate-600">${v.qte} (${v.type})</td>
+                    <td class="p-4 text-right font-black text-slate-900">${v.total.toLocaleString()} F</td>
+                    <td class="p-4 text-right font-black ${v.reste > 0 ? 'text-red-500' : 'text-emerald-500'}">
+                        ${v.reste.toLocaleString()} F
+                    </td>
+                    <td class="p-4 text-center">
+                        <button onclick="reimprimer(${v.id})" class="text-blue-600 hover:text-blue-800 p-1.5 rounded-lg hover:bg-blue-50 transition"><i class="fas fa-print"></i></button>
+                        <button onclick="supprimerVente(${v.id})" class="text-slate-300 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition"><i class="fas fa-trash text-xs"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderDashboard() {
+            document.getElementById('s-ciment').innerHTML = `${(state.stocks.ciment || 0).toLocaleString()} <span class="text-xs font-bold text-slate-400">sacs</span>`;
+            document.getElementById('s-p15').innerHTML = `${(state.stocks.p15 || 0).toLocaleString()} <span class="text-xs font-bold text-slate-400">blocs</span>`;
+            document.getElementById('s-p20').innerHTML = `${(state.stocks.p20 || 0).toLocaleString()} <span class="text-xs font-bold text-slate-400">blocs</span>`;
+            
+            const logs = state.prod_logs;
+            const totalSacs = logs.reduce((a, b) => a + (b.sacs || 0), 0);
+
+            let totalTheo = 0;
+            let totalReelles = 0;
+            logs.forEach(l => {
+                totalTheo += (l.type === 15) ? l.sacs * 9.5 : l.sacs * 12.5;
+                totalReelles += l.reelles;
+            });
+            const precGlobale = totalTheo > 0 ? ((totalReelles / totalTheo) * 100).toFixed(1) : 0;
+            
+            const elemPrec = document.getElementById('stat-prec-globale');
+            if (elemPrec) elemPrec.innerText = precGlobale + "%";
+
+            const elemHebdo = document.getElementById('hebdo-bars');
+            if (elemHebdo) {
+                elemHebdo.innerHTML = `
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase">Sacs de Ciment ConsommÃ©s</p>
+                            <p class="text-3xl font-black text-slate-900 mt-1">${totalSacs.toLocaleString()} <span class="text-sm text-slate-400">sacs</span></p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-xl font-black">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const dateAujourdhui = new Date().toLocaleDateString('fr-FR', { 
+                weekday: 'short', 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric' 
+            });
+            
+            const labelDate = document.getElementById('p-jour-label');
+            if (labelDate) {
+                labelDate.innerText = dateAujourdhui.toUpperCase();
+            }
+        }
+
+        function renderAnalytics() {
+            const totalCA = state.ventes.reduce((sum, v) => sum + v.total, 0);
+            const totalCredits = state.ventes.reduce((sum, v) => sum + v.reste, 0);
+            
+            document.getElementById('stat-ca').innerText = totalCA.toLocaleString() + " F";
+            document.getElementById('stat-credits').innerText = totalCredits.toLocaleString() + " F";
+
+            const v15 = state.ventes.filter(v => v.type === "15").reduce((a, b) => a + b.qte, 0);
+            const v20 = state.ventes.filter(v => v.type === "20").reduce((a, b) => a + b.qte, 0);
+            const totalQte = v15 + v20 || 1;
+
+            const p15 = ((v15 / totalQte) * 100).toFixed(0);
+            const p20 = ((v20 / totalQte) * 100).toFixed(0);
+
+            document.getElementById('bar-v15').style.width = p15 + "%";
+            document.getElementById('label-v15').innerText = p15 + "% (" + v15.toLocaleString() + " blocs)";
+            document.getElementById('bar-v20').style.width = p20 + "%";
+            document.getElementById('label-v20').innerText = p20 + "% (" + v20.toLocaleString() + " blocs)";
+
+            document.getElementById('stat-best-seller').innerText = v15 >= v20 ? "Parpaing 15" : "Parpaing 20";
+            document.getElementById('stat-precision').innerText = document.getElementById('stat-prec-globale').innerText;
+
+            const clientStats = {};
+            state.ventes.forEach(v => {
+                clientStats[v.client] = (clientStats[v.client] || 0) + v.total;
+            });
+            const sortedClients = Object.entries(clientStats).sort((a,b) => b[1] - a[1]).slice(0, 6);
+
+            document.getElementById('top-clients-list').innerHTML = sortedClients.map(([name, total], index) => `
+                <div class="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                    <span class="font-black text-slate-800 text-sm"><span class="text-blue-500 font-black mr-2">#${index+1}</span> ${name}</span>
+                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-black">${total.toLocaleString()} F</span>
+                </div>
+            `).join('');
+        }
+
+        // --- GESTION DU BILAN JOURNALIER ---
+        function ouvrirModalBilan() {
+            if (!isAuthenticated) {
+                alert("L'accÃ¨s au Bilan Journalier nÃ©cessite de dÃ©verrouiller l'Espace SÃ©curisÃ©.");
+                switchTab('sec');
+                return;
+            }
+            const todayISO = new Date().toISOString().split('T')[0];
+            document.getElementById('bilan-date-input').value = todayISO;
+            document.getElementById('modal-bilan').classList.remove('hidden');
+        }
+
+        function fermerModalBilan() {
+            document.getElementById('modal-bilan').classList.add('hidden');
+        }
+
+        function genererRapportBilan() {
+            const dateStr = document.getElementById('bilan-date-input').value;
+            if (!dateStr) return alert("Veuillez choisir une date valide !");
+
+            const formattedDate = new Date(dateStr).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            const ventesDuJour = state.ventes.filter(v => v.date_vente === dateStr || (v.created_at && v.created_at.startsWith(dateStr)));
+            const prodDuJour = state.prod_logs.filter(p => p.date_session === dateStr || (p.created_at && p.created_at.startsWith(dateStr)));
+
+            const caTotal = ventesDuJour.reduce((a, b) => a + (b.total || 0), 0);
+            const avancesEncaisses = ventesDuJour.reduce((a, b) => a + (b.avance || 0), 0);
+            const creditsRestes = ventesDuJour.reduce((a, b) => a + (b.reste || 0), 0);
+
+            const blocs15Vendus = ventesDuJour.filter(v => v.type === "15").reduce((a, b) => a + b.qte, 0);
+            const blocs20Vendus = ventesDuJour.filter(v => v.type === "20").reduce((a, b) => a + b.qte, 0);
+
+            const cimentConsomme = prodDuJour.reduce((a, b) => a + b.sacs, 0);
+            const totalCasses = prodDuJour.reduce((a, b) => a + (b.casses || 0), 0);
+            const valeurPertesCasses = totalCasses * 50; // 50 FCFA par parpaing cassÃ©
+            const paieMainOeuvre = prodDuJour.reduce((a, b) => a + b.paie, 0);
+            
+            const palettes15 = prodDuJour.filter(p => p.type === 15).reduce((a, b) => a + b.reelles, 0);
+            const palettes20 = prodDuJour.filter(p => p.type === 20).reduce((a, b) => a + b.reelles, 0);
+            
+            const blocs15Bruts = palettes15 * 5;
+            const blocs20Bruts = palettes20 * 3;
+
+            document.getElementById('bilan-print-zone').innerHTML = `
+                <div class="max-w-4xl mx-auto space-y-6 font-sans">
+                    <!-- ENTETE BILAN -->
+                    <div class="border-b-4 border-slate-900 pb-6 flex justify-between items-start">
+                        <div>
+                            <h1 class="text-4xl font-black italic tracking-tight text-slate-900">SIGMA BLOCK FABRIQUE</h1>
+                            <p class="text-blue-600 font-extrabold text-sm uppercase tracking-widest mt-1">Rapport de Bilan Journalier & ClÃ´ture de Caisse</p>
+                            <p class="text-slate-500 font-bold text-xs mt-1">Douala, Cameroun</p>
+                        </div>
+                        <div class="text-right bg-slate-900 text-white p-4 rounded-2xl">
+                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-wider">JOURNÃE DU</p>
+                            <p class="text-lg font-black uppercase">${formattedDate}</p>
+                        </div>
+                    </div>
+
+                    <!-- RESUME CAISSE & FINANCES -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Chiffre d'Affaires Brut</p>
+                            <p class="text-2xl font-black text-slate-900 mt-1">${caTotal.toLocaleString()} F</p>
+                            <p class="text-[10px] text-slate-500 font-bold mt-1">${ventesDuJour.length} vente(s) enregistrÃ©e(s)</p>
+                        </div>
+                        <div class="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200">
+                            <p class="text-[10px] font-black text-emerald-700 uppercase tracking-wider">EspÃ¨ces EncaissÃ©es (Avances)</p>
+                            <p class="text-2xl font-black text-emerald-700 mt-1">${avancesEncaisses.toLocaleString()} F</p>
+                            <p class="text-[10px] text-emerald-600 font-bold mt-1">Total Net en Caisse</p>
+                        </div>
+                        <div class="bg-red-50 p-5 rounded-2xl border-2 border-red-200">
+                            <p class="text-[10px] font-black text-red-600 uppercase tracking-wider">CrÃ©dits / Restes du Jour</p>
+                            <p class="text-2xl font-black text-red-600 mt-1">${creditsRestes.toLocaleString()} F</p>
+                            <p class="text-[10px] text-red-500 font-bold mt-1">A recouvrer chez les clients</p>
+                        </div>
+                    </div>
+
+                    <!-- DETAIL PRODUCTION ET MAIN D'OEUVRE -->
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- STATS PRODUCTION -->
+                        <div class="border-2 border-slate-200 p-6 rounded-2xl space-y-4">
+                            <h3 class="font-black text-slate-900 uppercase text-sm border-b pb-2 flex items-center">
+                                <i class="fas fa-industry text-blue-600 mr-2"></i> Bilan ActivitÃ© Production
+                            </h3>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between py-1 border-b border-slate-100">
+                                    <span class="text-slate-500 font-bold">Ciment consommÃ© :</span>
+                                    <span class="font-black text-slate-900">${cimentConsomme} sacs</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-slate-100">
+                                    <span class="text-slate-500 font-bold">Parpaings 15 produits :</span>
+                                    <span class="font-black text-slate-900">${blocs15Bruts} blocs (${palettes15} pal)</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-slate-100">
+                                    <span class="text-slate-500 font-bold">Parpaings 20 produits :</span>
+                                    <span class="font-black text-slate-900">${blocs20Bruts} blocs (${palettes20} pal)</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-slate-100 text-red-600">
+                                    <span class="font-bold">Total Parpaings CassÃ©s :</span>
+                                    <span class="font-black">${totalCasses} blocs (${valeurPertesCasses.toLocaleString()} FCFA dÃ©duits)</span>
+                                </div>
+                                <div class="flex justify-between py-1 pt-2">
+                                    <span class="text-blue-600 font-black">Main d'Åuvre Ãquipe Ã  payer :</span>
+                                    <span class="font-black text-blue-600 text-sm">${paieMainOeuvre.toLocaleString()} FCFA</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STATS VENTES & STOCKS -->
+                        <div class="border-2 border-slate-200 p-6 rounded-2xl space-y-4">
+                            <h3 class="font-black text-slate-900 uppercase text-sm border-b pb-2 flex items-center">
+                                <i class="fas fa-boxes-stacked text-orange-500 mr-2"></i> Mouvements de Stock Produit
+                            </h3>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between py-1 border-b border-slate-100">
+                                    <span class="text-slate-500 font-bold">Parpaings de 15 vendus :</span>
+                                    <span class="font-black text-slate-900">${blocs15Vendus} blocs</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-slate-100">
+                                    <span class="text-slate-500 font-bold">Parpaings de 20 vendus :</span>
+                                    <span class="font-black text-slate-900">${blocs20Vendus} blocs</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-slate-100">
+                                    <span class="text-slate-500 font-bold">Stock Restant Parpaings 15 :</span>
+                                    <span class="font-black text-blue-600">${state.stocks.p15} blocs</span>
+                                </div>
+                                <div class="flex justify-between py-1">
+                                    <span class="text-slate-500 font-bold">Stock Restant Parpaings 20 :</span>
+                                    <span class="font-black text-indigo-600">${state.stocks.p20} blocs</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TABLEAU DETAIL FACTURES DU JOUR -->
+                    <div class="border-2 border-slate-200 rounded-2xl p-6">
+                        <h3 class="font-black text-slate-900 uppercase text-xs mb-4">DÃ©tail des Factures Ãmises le ${formattedDate}</h3>
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-900 text-white uppercase text-[9px]">
+                                <tr>
+                                    <th class="p-2">Client</th>
+                                    <th class="p-2">Camion</th>
+                                    <th class="p-2 text-center">Produit</th>
+                                    <th class="p-2 text-center">QtÃ©</th>
+                                    <th class="p-2 text-right">Total</th>
+                                    <th class="p-2 text-right">Avance</th>
+                                    <th class="p-2 text-right">Reste</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-semibold">
+                                ${ventesDuJour.length > 0 ? ventesDuJour.map(v => `
+                                    <tr>
+                                        <td class="p-2 font-black">${v.client}</td>
+                                        <td class="p-2 text-slate-500">${v.camion}</td>
+                                        <td class="p-2 text-center">P.${v.type}</td>
+                                        <td class="p-2 text-center">${v.qte}</td>
+                                        <td class="p-2 text-right font-bold">${v.total.toLocaleString()} F</td>
+                                        <td class="p-2 text-right text-emerald-600 font-bold">${v.avance.toLocaleString()} F</td>
+                                        <td class="p-2 text-right text-red-600 font-bold">${v.reste.toLocaleString()} F</td>
+                                    </tr>
+                                `).join('') : '<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Aucune vente enregistrÃ©e pour cette journÃ©e.</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- SIGNATURES ET CLOTURE -->
+                    <div class="pt-8 grid grid-cols-2 gap-12">
+                        <div class="border-2 border-dashed border-slate-300 h-28 rounded-2xl p-4 flex flex-col justify-between">
+                            <span class="text-[9px] font-black uppercase text-slate-400">Signature du SecrÃ©taire / Caissier</span>
+                            <span class="text-xs font-bold text-slate-300">Nom & Date</span>
+                        </div>
+                        <div class="border-2 border-dashed border-slate-300 h-28 rounded-2xl p-4 flex flex-col justify-between">
+                            <span class="text-[9px] font-black uppercase text-slate-400">Validation de la Direction</span>
+                            <span class="text-xs font-bold text-slate-300">Visa & Cachet</span>
+                        </div>
+                    </div>
+
+                    <!-- BOUTONS D'ACTION -->
+                    <div class="no-print pt-6 flex space-x-4">
+                        <button onclick="window.print()" class="w-2/3 bg-slate-900 hover:bg-black text-white p-4 rounded-2xl font-black text-sm uppercase tracking-wider shadow-xl flex items-center justify-center space-x-2">
+                            <i class="fas fa-print"></i>
+                            <span>Imprimer le Bilan Journalier (A4)</span>
+                        </button>
+                        <button onclick="document.getElementById('bilan-print-zone').classList.add('hidden')" class="w-1/3 bg-slate-200 text-slate-800 p-4 rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-slate-300 transition">
+                            Fermer
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            fermerModalBilan();
+            document.getElementById('bilan-print-zone').classList.remove('hidden');
+        }
+
+        // --- DEUX VOLETS IMPRESSION FACTURE ---
+        function buildSingleReceipt(v, isSouche = false) {
+            return `
+                <div class="border-2 border-slate-900 p-6 rounded-2xl bg-white font-sans relative">
+                    <div class="absolute top-4 right-4 px-3 py-1 rounded-full bg-slate-900 text-white font-black text-[9px] uppercase tracking-widest">
+                        ${isSouche ? "EXEMPLAIRE SOUCHE (FABRIQUE)" : "EXEMPLAIRE CLIENT"}
+                    </div>
+
+                    <div class="flex justify-between items-start mb-6 border-b border-slate-200 pb-4">
+                        <div>
+                            <h1 class="text-3xl font-black italic tracking-tight text-slate-900">SIGMA BLOCK</h1>
+                            <p class="text-blue-600 font-bold text-xs mt-0.5">RECâ${v.id.toString().slice(-6)}</p>
+                        </div>
+                        <div class="text-right text-[10px] font-bold uppercase text-slate-600 leading-relaxed">
+                            Sigma Block Fabrique<br>
+                            Parpaings VibrÃ©s Haute RÃ©sistance<br>
+                            Douala, Cameroun
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl mb-4 grid grid-cols-2 text-xs border border-slate-100">
+                        <div>
+                            <p class="text-slate-400 uppercase text-[8px] font-black tracking-wider">Client</p>
+                            <p class="font-black text-slate-900 text-sm">${v.client}</p>
+                            <p class="text-[10px] text-slate-500 font-bold">Camion: ${v.camion}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-slate-400 uppercase text-[8px] font-black tracking-wider">Date d'Ãmission</p>
+                            <p class="font-black text-slate-900">${v.date_vente || new Date().toLocaleDateString('fr-FR')}</p>
+                        </div>
+                    </div>
+
+                    <table class="w-full mb-4 text-xs">
+                        <thead>
+                            <tr class="bg-slate-900 text-white text-[9px] uppercase tracking-wider">
+                                <th class="p-2 text-left rounded-l">DÃ©signation</th>
+                                <th class="p-2 text-center">P.U</th>
+                                <th class="p-2 text-center">QtÃ©</th>
+                                <th class="p-2 text-right rounded-r">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b font-bold text-slate-800">
+                                <td class="p-2.5">Parpaing de ${v.type} VibrÃ©</td>
+                                <td class="p-2.5 text-center">${v.prix} FCFA</td>
+                                <td class="p-2.5 text-center">${v.qte}</td>
+                                <td class="p-2.5 text-right font-black">${v.total.toLocaleString()} FCFA</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="flex justify-end space-y-1 flex-col items-end border-t border-slate-200 pt-3 text-xs">
+                        <div class="flex justify-between w-48 text-[11px]">
+                            <span class="font-bold text-slate-500">Montant Total :</span>
+                            <span class="font-black text-slate-900">${v.total.toLocaleString()} FCFA</span>
+                        </div>
+                        <div class="flex justify-between w-48 text-emerald-600 text-[11px] font-bold">
+                            <span>Avance VersÃ©e :</span>
+                            <span>- ${v.avance.toLocaleString()} FCFA</span>
+                        </div>
+                        <div class="flex justify-between w-48 text-base font-black text-red-600 border-t-2 border-slate-900 pt-1">
+                            <span>RESTE :</span>
+                            <span>${v.reste.toLocaleString()} FCFA</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-2 gap-6">
+                        <div class="border border-slate-300 h-16 rounded-xl flex items-end justify-center pb-1 text-[8px] font-bold text-slate-400 uppercase">Signature Client</div>
+                        <div class="border border-slate-300 h-16 rounded-xl flex items-end justify-center pb-1 text-[8px] font-bold text-slate-400 uppercase">La Direction</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function genererFactureHTML(v) {
+            document.getElementById('facture-zone').innerHTML = `
+                <div class="max-w-3xl mx-auto space-y-6">
+                    ${buildSingleReceipt(v, false)}
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t-2 border-dashed border-slate-300"></div>
+                        <span class="flex-shrink mx-4 text-slate-400 text-[10px] font-black uppercase tracking-widest"><i class="fas fa-scissors mr-1"></i> Ligne de DÃ©coupe</span>
+                        <div class="flex-grow border-t-2 border-dashed border-slate-300"></div>
+                    </div>
+                    ${buildSingleReceipt(v, true)}
+                    <div class="no-print pt-4 space-y-2">
+                        <button onclick="window.print()" class="w-full bg-slate-900 text-white p-4 rounded-xl font-black text-lg hover:bg-black transition shadow-lg flex items-center justify-center space-x-2">
+                            <i class="fas fa-print"></i>
+                            <span>IMPRIMER LES 2 VOLETS (CLIENT + SOUCHE)</span>
+                        </button>
+                        <button onclick="document.getElementById('facture-zone').classList.add('hidden')" class="w-full text-slate-500 text-xs uppercase font-bold underline text-center block py-2">
+                            Fermer
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('facture-zone').classList.remove('hidden');
+        }
+
+        // INIT
+        updatePrixVente();
+        calculerPaieChef();
+        loadDataFromSupabase();
+    </script>
+</body>
+</html>
