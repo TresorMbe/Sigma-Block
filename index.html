@@ -108,7 +108,7 @@
                     <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-tr from-slate-900 to-blue-900 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-950/20 text-2xl">
                         <i class="fas fa-shield-halved"></i>
                     </div>
-                    <h2 class="text-xl sm:text-2xl font-black text-slate-900 uppercase tracking-tight">安全安全区域验证</h2>
+                    <h2 class="text-xl sm:text-2xl font-black text-slate-900 uppercase tracking-tight">安全区域验证</h2>
                     <p class="text-xs font-semibold text-slate-500 mt-2 mb-8">请输入管理层访问密钥以继续使用系统</p>
                     
                     <form onsubmit="verifierMotDePasse(event)" class="space-y-4">
@@ -156,7 +156,7 @@
                         </div>
                     </div>
 
-                    <!-- 工资计算规则说明说明 -->
+                    <!-- 工资计算规则说明 -->
                     <div class="glass-panel p-5 sm:p-6 rounded-3xl shadow-lg space-y-3">
                         <h4 class="font-black text-xs uppercase tracking-wider text-slate-500 flex items-center">
                             <i class="fas fa-info-circle mr-2 text-blue-500"></i> 工资计费新规则 (通用标准)
@@ -327,7 +327,7 @@
                         <!-- 运费及距离区域设置 -->
                         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
                             <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider">
-                                <i class="fas fa-location-dot text-red-500 mr-1"></i> 配送区域 (基准: Broli Dibamba 厂区)
+                                <i class="fas fa-location-dot text-red-500 mr-1"></i> 配送区域 (基准: Dibamba 厂区)
                             </label>
                             <select id="v-zone" onchange="toggleTransportInput()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-xs text-slate-800 outline-none focus:border-blue-600">
                                 <option value="0" selected>标准区域 (≤ 3公里) — 免运费加价</option>
@@ -610,7 +610,7 @@
         const SUPABASE_KEY = "sb_publishable_-bZntjVr4uX3YH9WHR6rcg_r-4DA53x";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // 新设定之系统安全密码
+        // 系统安全密码
         const SECRET_PASSWORD = "AA661662";
 
         // 全局状态管理
@@ -674,7 +674,7 @@
             printWindow.document.close();
         }
 
-        // 密码安全解锁逻辑 (已更新至 AA661662)
+        // 密码安全解锁逻辑
         function verifierMotDePasse(e) {
             e.preventDefault();
             const pass = document.getElementById('auth-password').value;
@@ -778,28 +778,22 @@
             }
         }
 
-        // 精确工资算法：低于 45 包单价 1000F，达到 45 包及以上按 1-30(1000F), 31-45(2000F), >=46(3000F)
+        // 精确工资算法
         function calculerPaie(sacs, type) {
             let s = parseFloat(sacs) || 0;
             if (s <= 0) return 0;
 
-            // 规则一：若生产少于 45 包水泥，单一价 1000 FCFA/包
             if (s < 45) {
                 return s * 1000;
             }
 
-            // 规则二：达到或超过 45 包水泥，触发阶梯累进计算
             let total = 0;
-            // 前 30 包 (1-30)
             total += 30 * 1000;
 
             if (s <= 45) {
-                // 31 到 45 包部分
                 total += (s - 30) * 2000;
             } else {
-                // 31 到 45 包满额 (15 包 * 2000)
                 total += 15 * 2000;
-                // 46 包及以上部分
                 total += (s - 45) * 3000;
             }
 
@@ -1279,7 +1273,7 @@
             `).join('');
         }
 
-        // 每日结算日报 Modal 逻辑 (已彻底去除 Dibamba Broli 括号)
+        // 每日结算日报 Modal 逻辑
         function ouvrirModalBilan() {
             if (!isAuthenticated) {
                 alert("访问每日结算日报需要解锁管理层权限。");
@@ -1497,7 +1491,7 @@
             imprimerDocument(contentHTML);
         }
 
-        // 双联收据打印逻辑 (中文界面)
+        // 双联收据构建逻辑
         function buildSingleReceipt(v, isSouche = false) {
             return `
                 <div class="border-2 border-slate-900 p-4 rounded-xl bg-white font-sans relative flex flex-col justify-between" style="height: 46vh; box-sizing: border-box;">
@@ -1551,49 +1545,49 @@
                     </div>
 
                     <div>
-                        <div class="flex justify-end space-y-0.5 flex-col items-end border-t border-slate-200 pt-1.5 text-[11px]">
-                            <div class="flex justify-between w-48">
-                                <span class="font-bold text-slate-500">账单总金额 :</span>
-                                <span class="font-black text-slate-900">${v.total.toLocaleString()} FCFA</span>
+                        <div class="bg-slate-100 p-2.5 rounded-lg flex justify-between items-center text-[11px] font-black mb-3">
+                            <div>
+                                <span class="text-slate-500 text-[9px] uppercase">账单总额:</span>
+                                <span class="text-slate-900 ml-1">${v.total.toLocaleString()} F</span>
                             </div>
-                            <div class="flex justify-between w-48 text-emerald-600 font-bold">
-                                <span>已付预付款 :</span>
-                                <span>- ${v.avance.toLocaleString()} FCFA</span>
+                            <div>
+                                <span class="text-emerald-600 text-[9px] uppercase">已付金额:</span>
+                                <span class="text-emerald-700 ml-1">${v.avance.toLocaleString()} F</span>
                             </div>
-                            <div class="flex justify-between w-48 text-sm font-black text-red-600 border-t-2 border-slate-900 pt-0.5">
-                                <span>待付尾款 :</span>
-                                <span>${v.reste.toLocaleString()} FCFA</span>
+                            <div>
+                                <span class="text-red-500 text-[9px] uppercase">待付尾款:</span>
+                                <span class="text-red-600 ml-1">${v.reste.toLocaleString()} F</span>
                             </div>
                         </div>
 
-                        <div class="mt-3 grid grid-cols-2 gap-4">
-                            <div class="border border-slate-300 h-10 rounded-lg flex items-end justify-center pb-1 text-[7px] font-bold text-slate-400 uppercase">客户提货签字</div>
-                            <div class="border border-slate-300 h-10 rounded-lg flex items-end justify-center pb-1 text-[7px] font-bold text-slate-400 uppercase">厂方财务印章</div>
+                        <div class="grid grid-cols-2 gap-4 text-center text-[8px] font-bold text-slate-400 border-t pt-2">
+                            <div>客户提货签字 / Signature Client</div>
+                            <div>发货方盖章 / Cachet Fabrique</div>
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        function lancerImpressionFacture(v) {
-            const contentHTML = `
-                <div class="max-w-2xl mx-auto space-y-2">
-                    ${buildSingleReceipt(v, false)}
-                    <div class="relative flex py-1 items-center">
-                        <div class="flex-grow border-t-2 border-dashed border-slate-300"></div>
-                        <span class="flex-shrink mx-3 text-slate-400 text-[8px] font-black uppercase tracking-widest"><i class="fas fa-scissors mr-1"></i> 裁剪线</span>
-                        <div class="flex-grow border-t-2 border-dashed border-slate-300"></div>
+        // 启动收据打印过程
+        function lancerImpressionFacture(vente) {
+            const html = `
+                <div class="space-y-4">
+                    ${buildSingleReceipt(vente, false)}
+                    <div class="border-b-2 border-dashed border-slate-300 my-2 text-center text-[8px] text-slate-400 font-bold uppercase tracking-widest">
+                        ✂ 沿虚线剪开 (Ligne de découpe) ✂
                     </div>
-                    ${buildSingleReceipt(v, true)}
+                    ${buildSingleReceipt(vente, true)}
                 </div>
             `;
-            imprimerDocument(contentHTML);
+            imprimerDocument(html);
         }
 
-        // 页面初始化
-        updatePrixVente();
-        calculerPaieChef();
-        loadDataFromSupabase();
+        // 页面初始化加载
+        window.addEventListener('DOMContentLoaded', () => {
+            updatePrixVente();
+            loadDataFromSupabase();
+        });
     </script>
 </body>
 </html>
