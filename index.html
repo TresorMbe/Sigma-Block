@@ -138,7 +138,7 @@
                             <i class="fas fa-sack-dollar"></i>
                         </div>
                         <div class="flex justify-between items-center mb-6">
-                            <span class="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-[10px] font-black tracking-widest text-blue-300 uppercase">新阶梯计件制</span>
+                            <span class="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-[10px] font-black tracking-widest text-blue-300 uppercase">固定计件制</span>
                             <span id="p-jour-label" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">--/--/----</span>
                         </div>
                         <p class="text-xs font-bold uppercase text-slate-400 tracking-wider">本班次预估人工薪酬总额</p>
@@ -159,22 +159,14 @@
                     <!-- 工资计算规则说明 -->
                     <div class="glass-panel p-5 sm:p-6 rounded-3xl shadow-lg space-y-3">
                         <h4 class="font-black text-xs uppercase tracking-wider text-slate-500 flex items-center">
-                            <i class="fas fa-info-circle mr-2 text-blue-500"></i> 工资计费新规则 (通用标准)
+                            <i class="fas fa-info-circle mr-2 text-blue-500"></i> 工资计费新规则 (Nouvelle Règle de Paie)
                         </h4>
                         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-xs space-y-2">
-                            <p class="font-black text-slate-800">底线触发门槛： <span class="text-blue-600 font-extrabold">单班次需达到 45 包水泥</span></p>
+                            <p class="font-black text-slate-800">Tarif Unique : <span class="text-blue-600 font-extrabold">1 000 FCFA / sac (de 1 à 60 sacs)</span></p>
                             <p class="text-[11px] text-slate-600 leading-relaxed font-medium">
-                                • 若生产 <strong class="text-red-600">低于 45 包</strong>：按基础单一价 <strong class="text-slate-900">1,000 FCFA / 包</strong> 计算。<br>
-                                • 若生产 <strong class="text-emerald-600">达到 45 包及以上</strong>：触发阶梯奖金计算：
+                                • Production de 1 à 60 sacs : <strong class="text-slate-900">1 000 FCFA par sac de ciment</strong>
                             </p>
-                            <div class="pt-2 border-t border-slate-200">
-                                <ul class="text-[11px] text-slate-700 space-y-1 font-semibold">
-                                    <li>1 - 30 包： <strong class="text-slate-900">1,000 FCFA / 包</strong></li>
-                                    <li>31 - 45 包： <strong class="text-slate-900">2,000 FCFA / 包</strong></li>
-                                    <li>46 包及以上： <strong class="text-slate-900">3,000 FCFA / 包</strong></li>
-                                </ul>
-                            </div>
-                            <p class="text-[10px] text-slate-400 italic pt-1 border-t border-slate-100">* 15# 与 20# 空心砖均适用此统一规则。损耗废砖按 -50 FCFA/块 从工资扣除。</p>
+                            <p class="text-[10px] text-slate-400 italic pt-1 border-t border-slate-100">* Pénalité de casse : -50 FCFA / bloc cassé déduit du salaire total.</p>
                         </div>
                     </div>
                 </div>
@@ -778,26 +770,11 @@
             }
         }
 
-        // 精确工资算法
+        // RÈGLE DE PAIE STRICTE : 1 000 FCFA par sac (de 1 à 60 sacs)
         function calculerPaie(sacs, type) {
             let s = parseFloat(sacs) || 0;
             if (s <= 0) return 0;
-
-            if (s < 45) {
-                return s * 1000;
-            }
-
-            let total = 0;
-            total += 30 * 1000;
-
-            if (s <= 45) {
-                total += (s - 30) * 2000;
-            } else {
-                total += 15 * 2000;
-                total += (s - 45) * 3000;
-            }
-
-            return total;
+            return s * 1000;
         }
 
         function calculerPaieChef() {
@@ -1308,13 +1285,13 @@
             const blocs15Vendus = ventesDuJour.filter(v => v.type === "15").reduce((a, b) => a + b.qte, 0);
             const blocs20Vendus = ventesDuJour.filter(v => v.type === "20").reduce((a, b) => a + b.qte, 0);
 
-            const cimentConsomme = prodDuJour.reduce((a, b) => a + b.sacs, 0);
+            const cimentConsomme = prodDuJour.reduce((a, b) => a + (b.sacs || 0), 0);
             const totalCasses = prodDuJour.reduce((a, b) => a + (b.casses || 0), 0);
             const valeurPertesCasses = totalCasses * 50;
-            const paieMainOeuvre = prodDuJour.reduce((a, b) => a + b.paie, 0);
+            const paieMainOeuvre = prodDuJour.reduce((a, b) => a + (b.paie || 0), 0);
             
-            const palettes15 = prodDuJour.filter(p => p.type === 15).reduce((a, b) => a + p.reelles, 0);
-            const palettes20 = prodDuJour.filter(p => p.type === 20).reduce((a, b) => a + p.reelles, 0);
+            const palettes15 = prodDuJour.filter(p => Number(p.type) === 15).reduce((a, b) => a + (b.reelles || 0), 0);
+            const palettes20 = prodDuJour.filter(p => Number(p.type) === 20).reduce((a, b) => a + (b.reelles || 0), 0);
             
             const blocs15Bruts = palettes15 * 5;
             const blocs20Bruts = palettes20 * 3;
