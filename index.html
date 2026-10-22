@@ -49,6 +49,10 @@
                         <i class="fas fa-receipt text-xs"></i>
                         <span>销售与库存</span>
                     </button>
+                    <button onclick="switchTab('perso')" id="btn-tab-perso" class="px-4 py-2.5 rounded-xl transition font-bold text-xs uppercase tracking-wider text-slate-400 hover:text-white hover:bg-slate-800 flex items-center space-x-2">
+                        <i class="fas fa-users text-xs"></i>
+                        <span>人事与薪酬</span>
+                    </button>
                     <button onclick="switchTab('stats')" id="btn-tab-stats" class="px-4 py-2.5 rounded-xl transition font-bold text-xs uppercase tracking-wider text-slate-400 hover:text-white hover:bg-slate-800 flex items-center space-x-2">
                         <i class="fas fa-chart-pie text-xs"></i>
                         <span>数据分析</span>
@@ -85,6 +89,10 @@
             <button onclick="switchTab('sec'); toggleMobileMenu();" id="mb-btn-sec" class="w-full px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-300 hover:bg-slate-800 flex items-center space-x-3">
                 <i class="fas fa-receipt w-5"></i>
                 <span>销售与库存 (Sales & Stock)</span>
+            </button>
+            <button onclick="switchTab('perso'); toggleMobileMenu();" id="mb-btn-perso" class="w-full px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-300 hover:bg-slate-800 flex items-center space-x-3">
+                <i class="fas fa-users w-5"></i>
+                <span>人事与薪酬 (Personnel)</span>
             </button>
             <button onclick="switchTab('stats'); toggleMobileMenu();" id="mb-btn-stats" class="w-full px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-300 hover:bg-slate-800 flex items-center space-x-3">
                 <i class="fas fa-chart-pie w-5"></i>
@@ -159,14 +167,12 @@
                     <!-- 工资计算规则说明 -->
                     <div class="glass-panel p-5 sm:p-6 rounded-3xl shadow-lg space-y-3">
                         <h4 class="font-black text-xs uppercase tracking-wider text-slate-500 flex items-center">
-                            <i class="fas fa-info-circle mr-2 text-blue-500"></i> 工资计费新规则 (Nouvelle Règle de Paie)
+                            <i class="fas fa-info-circle mr-2 text-blue-500"></i> 三大岗位薪酬规则 (Règles Opérationnelles)
                         </h4>
                         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-xs space-y-2">
-                            <p class="font-black text-slate-800">Tarif Unique : <span class="text-blue-600 font-extrabold">1 000 FCFA / sac (de 1 à 60 sacs)</span></p>
-                            <p class="text-[11px] text-slate-600 leading-relaxed font-medium">
-                                • Production de 1 à 60 sacs : <strong class="text-slate-900">1 000 FCFA par sac de ciment</strong>
-                            </p>
-                            <p class="text-[10px] text-slate-400 italic pt-1 border-t border-slate-100">* Pénalité de casse : -50 FCFA / bloc cassé déduit du salaire total.</p>
+                            <p class="font-black text-slate-800">1. Travailleurs machine : <span class="text-blue-600 font-extrabold">1 000 FCFA / sac</span> (réglé le samedi)</p>
+                            <p class="font-black text-slate-800">2. Transporteurs de palettes : <span class="text-amber-600 font-extrabold">25F (15#) | 15F (20#)</span> / palette (réglé chaque jour)</p>
+                            <p class="font-black text-slate-800">3. Chargeurs de camion : <span class="text-emerald-600 font-extrabold">10 FCFA / bloc</span> (réglé automatiquement à chaque vente)</p>
                         </div>
                     </div>
                 </div>
@@ -339,8 +345,8 @@
                         </div>
 
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">提货出库数量 (块)</label>
-                            <input type="number" id="v-qte" oninput="calculerResteVente()" placeholder="0" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-2xl font-black text-slate-900 outline-none focus:border-blue-600 focus:bg-white transition-all">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">提货出库数量 (块) <span class="text-emerald-600 font-bold">(自动计算 10F/块 装车费)</span></label>
+                            <input type="number" id="v-qte" oninput="calculerResteVente()" placeholder="0" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-2xl font-black text-slate-900 outline-none focus:border-blue-600 focus:bg-white transition-all">
                         </div>
                         
                         <div class="bg-blue-50/70 p-4 sm:p-5 rounded-2xl space-y-3 border border-blue-100">
@@ -389,6 +395,84 @@
                                 <tbody id="table-historique" class="font-medium divide-y divide-slate-100">
                                     <!-- 动态由 JS 渲染 -->
                                 </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 人事与薪酬界面 / PERSONNEL TAB (新增) -->
+        <section id="tab-perso" class="tab-content space-y-6 sm:space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
+                <!-- 登记员工与预支卡片 -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="glass-panel p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 space-y-4">
+                        <h3 class="font-black text-lg uppercase tracking-tight text-slate-900 border-b pb-3">
+                            <i class="fas fa-user-plus mr-2 text-blue-600"></i> 登记新员工
+                        </h3>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">员工姓名</label>
+                            <input type="text" id="perso-nom" placeholder="例如: Paul Mbida" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm outline-none focus:border-blue-600">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">岗位角色 (3大固定岗位)</label>
+                            <select id="perso-role" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm outline-none focus:border-blue-600">
+                                <option value="travailleur_machine">1. 机器工人 (Travailleur Machine - 按水泥包计件)</option>
+                                <option value="transporteur_palette" selected>2. 托盘搬运工 (Transporteur Palettes - 按托盘计件)</option>
+                                <option value="chargeur_camion">3. 货车装载工 (Chargeur de Camion - 按10F/块计件)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">电话号码</label>
+                            <input type="text" id="perso-tel" placeholder="例如: 690000000" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm outline-none focus:border-blue-600">
+                        </div>
+                        <button onclick="ajouterPersonnel()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg transition-all uppercase tracking-wider text-xs">
+                            确认登记员工
+                        </button>
+                    </div>
+
+                    <div class="glass-panel p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 space-y-4">
+                        <h3 class="font-black text-lg uppercase tracking-tight text-slate-900 border-b pb-3">
+                            <i class="fas fa-hand-holding-dollar mr-2 text-amber-600"></i> 员工预支薪酬 (Avance)
+                        </h3>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">选择员工</label>
+                            <select id="avance-perso-select" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm outline-none focus:border-amber-600"></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">预支金额 (FCFA)</label>
+                            <input type="number" id="avance-montant" placeholder="例如: 5000" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-black text-lg outline-none focus:border-amber-600">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">预支原因 / 备注</label>
+                            <input type="text" id="avance-motif" placeholder="例如: 临时生活急用" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-xs outline-none focus:border-amber-600">
+                        </div>
+                        <button onclick="enregistrerAvance()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-black py-4 rounded-xl shadow-lg transition-all uppercase tracking-wider text-xs">
+                            发放并记录预支
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 员工名册列表 -->
+                <div class="lg:col-span-8">
+                    <div class="glass-panel p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 space-y-6">
+                        <div class="flex justify-between items-center border-b pb-4">
+                            <h3 class="font-black text-lg sm:text-xl uppercase tracking-tight text-slate-900">厂区员工名册与预支账目</h3>
+                            <span id="perso-count-badge" class="px-3 py-1 bg-slate-100 font-black text-xs rounded-full uppercase">0 员工</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-100 uppercase text-[10px] text-slate-400 font-black tracking-wider">
+                                    <tr>
+                                        <th class="p-3.5">员工姓名</th>
+                                        <th class="p-3.5">岗位角色</th>
+                                        <th class="p-3.5">电话</th>
+                                        <th class="p-3.5 text-right">已支取总预付款</th>
+                                        <th class="p-3.5 text-center">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-personnel" class="divide-y divide-slate-100 font-medium"></tbody>
                             </table>
                         </div>
                     </div>
@@ -613,6 +697,8 @@
             prod_logs: [],
             ventes: [],
             depenses_sable: [],
+            personnel: [], // 新增：员工名册
+            avances: [],   // 新增：预支账目
             stocks: { ciment: 168, sable: 0, p15: 0, p20: 0 }
         };
 
@@ -698,7 +784,7 @@
 
         // TAB 标签切换与防护
         function switchTab(t) {
-            if ((t === 'sec' || t === 'stats') && !isAuthenticated) {
+            if ((t === 'sec' || t === 'stats' || t === 'perso') && !isAuthenticated) {
                 pendingTab = t;
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.getElementById('tab-auth').classList.add('active');
@@ -713,11 +799,12 @@
 
             renderDashboard();
             if(t === 'sec') renderHistorique();
+            if(t === 'perso') renderPersonnel(); // 渲染人事名册
             if(t === 'stats') renderAnalytics();
         }
 
         function updateNavStyles(activeTab) {
-            ['prod', 'sec', 'stats'].forEach(tab => {
+            ['prod', 'sec', 'perso', 'stats'].forEach(tab => {
                 const btn = document.getElementById('btn-tab-' + tab);
                 const mbBtn = document.getElementById('mb-btn-' + tab);
                 
@@ -750,6 +837,13 @@
                 const { data: depensesSableData } = await _supabase.from('depenses_sable').select('*').order('id', { ascending: false });
                 if (depensesSableData) state.depenses_sable = depensesSableData;
 
+                // 新增：加载员工与预支数据
+                const { data: persData } = await _supabase.from('personnel').select('*').order('id', { ascending: true });
+                if (persData) state.personnel = persData;
+
+                const { data: aData } = await _supabase.from('avances_personnel').select('*');
+                if (aData) state.avances = aData;
+
                 const { data: stocksData, error } = await _supabase.from('stocks').select('*').eq('id', 1).single();
                 
                 if (stocksData) {
@@ -765,6 +859,7 @@
 
                 renderDashboard();
                 renderHistorique();
+                renderPersonnel();
             } catch (err) {
                 console.error("Supabase 同步错误:", err);
             }
@@ -823,9 +918,11 @@
             const newP20 = type === "20" ? (state.stocks.p20 || 0) + blocksNetIntacts : (state.stocks.p20 || 0);
 
             const paieNette = Math.max(0, calculerPaie(sacs, type) - (casses * 50));
+            // 自动计算搬运工佣金：25F (15#) 或 15F (20#) 每托盘
+            const primeTransport = reelles * (type === "15" ? 25 : 15);
 
             const { error: err1 } = await _supabase.from('production_logs').insert([{ 
-                sacs, reelles, casses, type: parseInt(type), paie: paieNette 
+                sacs, reelles, casses, type: parseInt(type), paie: paieNette, prime_transport: primeTransport 
             }]);
             
             const { error: err2 } = await _supabase.from('stocks').update({ ciment: newCiment, p15: newP15, p20: newP20 }).eq('id', 1);
@@ -1004,6 +1101,8 @@
             }
 
             const total = qte * prixUnitLivré;
+            // 自动计算装车工佣金：10 FCFA / 块
+            const commissionChargeurs = qte * 10;
 
             const nouvelleVente = {
                 client, 
@@ -1013,7 +1112,8 @@
                 prix: prixUnitLivré, 
                 total: total, 
                 avance, 
-                reste: total - avance
+                reste: total - avance,
+                commission_chargeurs: commissionChargeurs
             };
 
             const newP15 = type === "15" ? Math.max(0, state.stocks.p15 - qte) : state.stocks.p15;
@@ -1067,6 +1167,72 @@
                     </td>
                 </tr>
             `).join('');
+        }
+
+        // --- 人事与员工管理函数 (新增) ---
+        async function ajouterPersonnel() {
+            const nom = document.getElementById('perso-nom').value;
+            const role = document.getElementById('perso-role').value;
+            const telephone = document.getElementById('perso-tel').value;
+            if(!nom) return alert("请输入员工姓名！");
+            
+            const { error } = await _supabase.from('personnel').insert([{ nom, role, telephone }]);
+            if(error) return alert("保存失败，请检查数据库表结构。");
+
+            document.getElementById('perso-nom').value = '';
+            document.getElementById('perso-tel').value = '';
+            await loadDataFromSupabase();
+        }
+
+        async function enregistrerAvance() {
+            const personnel_id = document.getElementById('avance-perso-select').value;
+            const montant = parseFloat(document.getElementById('avance-montant').value);
+            const motif = document.getElementById('avance-motif').value || "预支生活费";
+            if(!personnel_id || !montant) return alert("请选择员工并输入预支金额！");
+
+            const { error } = await _supabase.from('avances_personnel').insert([{ personnel_id: parseInt(personnel_id), montant, motif }]);
+            if(error) return alert("保存失败。");
+
+            document.getElementById('avance-montant').value = '';
+            document.getElementById('avance-motif').value = '';
+            await loadDataFromSupabase();
+        }
+
+        function renderPersonnel() {
+            const table = document.getElementById('table-personnel');
+            const select = document.getElementById('avance-perso-select');
+            if(!table) return;
+
+            const roleLabels = {
+                'travailleur_machine': '1. 机器工人',
+                'transporteur_palette': '2. 托盘搬运工',
+                'chargeur_camion': '3. 货车装载工'
+            };
+
+            document.getElementById('perso-count-badge').innerText = `${state.personnel.length} 名员工`;
+            select.innerHTML = state.personnel.map(p => `<option value="${p.id}">${p.nom} (${roleLabels[p.role] || p.role})</option>`).join('');
+            
+            table.innerHTML = state.personnel.map(p => {
+                const totalAv = state.avances.filter(a => a.personnel_id === p.id).reduce((s, a) => s + Number(a.montant), 0);
+                return `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="p-3.5 font-black text-slate-800">${p.nom}</td>
+                        <td class="p-3.5"><span class="px-2.5 py-1 bg-blue-50 text-blue-700 font-bold text-xs rounded-lg">${roleLabels[p.role] || p.role}</span></td>
+                        <td class="p-3.5 text-slate-500 font-bold">${p.telephone || '--'}</td>
+                        <td class="p-3.5 text-right font-black text-amber-600">${totalAv.toLocaleString()} F</td>
+                        <td class="p-3.5 text-center">
+                            <button onclick="supprimerPersonnel(${p.id})" class="text-slate-300 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition"><i class="fas fa-trash text-xs"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function supprimerPersonnel(id) {
+            if(confirm("确定要删除该员工档案吗？")) {
+                await _supabase.from('personnel').delete().eq('id', id);
+                await loadDataFromSupabase();
+            }
         }
 
         // 补交尾款 Modal 逻辑
@@ -1250,7 +1416,7 @@
             `).join('');
         }
 
-        // 每日结算日报 Modal 逻辑
+        // 每日结算日报 Modal 逻辑（已集成装车费、搬运托盘费的实时扣减统计）
         function ouvrirModalBilan() {
             if (!isAuthenticated) {
                 alert("访问每日结算日报需要解锁管理层权限。");
@@ -1280,7 +1446,21 @@
             const avancesEncaisses = ventesDuJour.reduce((a, b) => a + (b.avance || 0), 0);
 
             const totalDepensesSable = depensesSableDuJour.reduce((a, b) => a + (b.montant_total || 0), 0);
-            const soldeNetCaisse = avancesEncaisses - totalDepensesSable;
+            
+            // 计算当日托盘搬运佣金（Transporteurs de palettes）
+            let palettes15Jour = 0, palettes20Jour = 0;
+            prodDuJour.forEach(p => {
+                if (Number(p.type) === 15) palettes15Jour += (p.reelles || 0);
+                if (Number(p.type) === 20) palettes20Jour += (p.reelles || 0);
+            });
+            const primeTransportPousseurs = (palettes15Jour * 25) + (palettes20Jour * 15);
+
+            // 计算当日货车装车工佣金（Chargeurs de camion: 10 FCFA / bloc）
+            const totalBlocsVendusJour = ventesDuJour.reduce((a, b) => a + (b.qte || 0), 0);
+            const commissionChargeursJour = totalBlocsVendusJour * 10;
+
+            // 现金净余额 = 实收现金 - 砂石支出 - 搬运佣金 - 装车工佣金
+            const soldeNetCaisse = avancesEncaisses - totalDepensesSable - primeTransportPousseurs - commissionChargeursJour;
 
             const blocs15Vendus = ventesDuJour.filter(v => v.type === "15").reduce((a, b) => a + b.qte, 0);
             const blocs20Vendus = ventesDuJour.filter(v => v.type === "20").reduce((a, b) => a + b.qte, 0);
@@ -1290,11 +1470,8 @@
             const valeurPertesCasses = totalCasses * 50;
             const paieMainOeuvre = prodDuJour.reduce((a, b) => a + (b.paie || 0), 0);
             
-            const palettes15 = prodDuJour.filter(p => Number(p.type) === 15).reduce((a, b) => a + (b.reelles || 0), 0);
-            const palettes20 = prodDuJour.filter(p => Number(p.type) === 20).reduce((a, b) => a + (b.reelles || 0), 0);
-            
-            const blocs15Bruts = palettes15 * 5;
-            const blocs20Bruts = palettes20 * 3;
+            const blocs15Bruts = palettes15Jour * 5;
+            const blocs20Bruts = palettes20Jour * 3;
 
             const contentHTML = `
                 <div class="max-w-4xl mx-auto space-y-6 font-sans">
@@ -1322,14 +1499,25 @@
                             <p class="text-[9px] text-emerald-600 font-bold mt-1">已回款现金</p>
                         </div>
                         <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-200">
-                            <p class="text-[9px] font-black text-amber-800 uppercase tracking-wider">砂石原料采购支出</p>
-                            <p class="text-xl font-black text-amber-700 mt-1">${totalDepensesSable.toLocaleString()} F</p>
-                            <p class="text-[9px] text-amber-600 font-bold mt-1">共 ${depensesSableDuJour.length} 车到货</p>
+                            <p class="text-[9px] font-black text-amber-800 uppercase tracking-wider">原料支出+当日日结佣金</p>
+                            <p class="text-xl font-black text-amber-700 mt-1">${(totalDepensesSable + primeTransportPousseurs + commissionChargeursJour).toLocaleString()} F</p>
+                            <p class="text-[9px] text-amber-600 font-bold mt-1">砂石 + 搬运 + 装车</p>
                         </div>
                         <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200">
                             <p class="text-[9px] font-black text-blue-800 uppercase tracking-wider">现金余额 (Solde Net)</p>
                             <p class="text-xl font-black ${soldeNetCaisse >= 0 ? 'text-blue-900' : 'text-red-600'} mt-1">${soldeNetCaisse.toLocaleString()} F</p>
-                            <p class="text-[9px] text-blue-600 font-bold mt-1">实收现金 - 砂石支出</p>
+                            <p class="text-[9px] text-blue-600 font-bold mt-1">现金净余</p>
+                        </div>
+                    </div>
+
+                    <!-- 日结现场现付人工明细：搬运工与装车工 -->
+                    <div class="border-2 border-blue-200 bg-blue-50/40 rounded-2xl p-5">
+                        <h3 class="font-black text-blue-900 uppercase text-xs mb-3 flex items-center">
+                            <i class="fas fa-truck-ramp-box mr-2 text-blue-600"></i> 当日现场日结工资支出 (Transporteurs & Chargeurs)
+                        </h3>
+                        <div class="grid grid-cols-2 gap-4 text-xs font-bold text-slate-700">
+                            <div>• 托盘搬运 (Pousseurs) : ${palettes15Jour}托×25F + ${palettes20Jour}托×15F = <span class="text-blue-600 font-black">${primeTransportPousseurs.toLocaleString()} F</span></div>
+                            <div>• 货车装车 (Chargeurs) : ${totalBlocsVendusJour}块 × 10F = <span class="text-emerald-600 font-black">${commissionChargeursJour.toLocaleString()} F</span></div>
                         </div>
                     </div>
 
@@ -1366,27 +1554,19 @@
                     <div class="grid grid-cols-2 gap-6">
                         <div class="border-2 border-slate-200 p-6 rounded-2xl space-y-4">
                             <h3 class="font-black text-slate-900 uppercase text-xs border-b pb-2 flex items-center">
-                                <i class="fas fa-industry text-blue-600 mr-2"></i> 生产与人工薪酬结算
+                                <i class="fas fa-industry text-blue-600 mr-2"></i> 机器工人生产薪酬 (周六结算)
                             </h3>
                             <div class="space-y-2 text-xs">
                                 <div class="flex justify-between py-1 border-b border-slate-100">
                                     <span class="text-slate-500 font-bold">水泥消耗总量：</span>
                                     <span class="font-black text-slate-900">${cimentConsomme} 包</span>
                                 </div>
-                                <div class="flex justify-between py-1 border-b border-slate-100">
-                                    <span class="text-slate-500 font-bold">15# 砖生产总量：</span>
-                                    <span class="font-black text-slate-900">${blocs15Bruts} 块 (${palettes15} 托)</span>
-                                </div>
-                                <div class="flex justify-between py-1 border-b border-slate-100">
-                                    <span class="text-slate-500 font-bold">20# 砖生产总量：</span>
-                                    <span class="font-black text-slate-900">${blocs20Bruts} 块 (${palettes20} 托)</span>
-                                </div>
                                 <div class="flex justify-between py-1 border-b border-slate-100 text-red-600">
                                     <span class="font-bold">废砖损耗总量：</span>
-                                    <span class="font-black">${totalCasses} 块 (已扣减 ${valeurPertesCasses.toLocaleString()} FCFA)</span>
+                                    <span class="font-black">${totalCasses} 块 (扣减 ${valeurPertesCasses.toLocaleString()} FCFA)</span>
                                 </div>
                                 <div class="flex justify-between py-1 pt-2">
-                                    <span class="text-blue-600 font-black">应付班次总人工工资：</span>
+                                    <span class="text-blue-600 font-black">机器工人周六待付总工资：</span>
                                     <span class="font-black text-blue-600 text-sm">${paieMainOeuvre.toLocaleString()} FCFA</span>
                                 </div>
                             </div>
@@ -1409,13 +1589,9 @@
                                     <span class="text-slate-500 font-bold">15# 砖厂区结余库存：</span>
                                     <span class="font-black text-blue-600">${state.stocks.p15} 块</span>
                                 </div>
-                                <div class="flex justify-between py-1 border-b border-slate-100">
+                                <div class="flex justify-between py-1">
                                     <span class="text-slate-500 font-bold">20# 砖厂区结余库存：</span>
                                     <span class="font-black text-indigo-600">${state.stocks.p20} 块</span>
-                                </div>
-                                <div class="flex justify-between py-1">
-                                    <span class="text-slate-500 font-bold">砂石原料结余库存：</span>
-                                    <span class="font-black text-amber-700">${state.stocks.sable || 0} 车</span>
                                 </div>
                             </div>
                         </div>
