@@ -372,11 +372,27 @@
                     <div class="glass-panel p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 space-y-6">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4">
                             <h3 class="font-black text-lg sm:text-xl uppercase tracking-tight text-slate-900">销售账单历史</h3>
-                            <div class="relative w-full sm:w-64">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                                    <i class="fas fa-search text-xs"></i>
-                                </span>
-                                <input type="text" id="search-client" oninput="filterHistorique()" placeholder="搜索客户或车牌号..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-blue-600 focus:bg-white">
+                            
+                            <!-- 新增：时间段筛选器与日期选择器组件 -->
+                            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                                <select id="filter-periode" onchange="filterHistorique()" class="p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-blue-600">
+                                    <option value="tous" selected>全部时间</option>
+                                    <option value="aujourdhui">今天 (Aujourd'hui)</option>
+                                    <option value="hier">昨天 (Hier)</option>
+                                    <option value="semaine">本周 (Cette semaine)</option>
+                                    <option value="mois">本月 (Ce mois)</option>
+                                    <option value="custom">选择日期 (Date...)</option>
+                                </select>
+
+                                <!-- 自定义日期输入框 (默认隐藏) -->
+                                <input type="date" id="filter-custom-date" onchange="filterHistorique()" class="hidden p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-blue-600">
+
+                                <div class="relative flex-grow sm:w-48">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                        <i class="fas fa-search text-xs"></i>
+                                    </span>
+                                    <input type="text" id="search-client" oninput="filterHistorique()" placeholder="搜索客户或车牌..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-blue-600 focus:bg-white">
+                                </div>
                             </div>
                         </div>
 
@@ -920,9 +936,10 @@
             const paieNette = Math.max(0, calculerPaie(sacs, type) - (casses * 50));
             // 自动计算搬运工佣金：25F (15#) 或 15F (20#) 每托盘
             const primeTransport = reelles * (type === "15" ? 25 : 15);
+            const aujourdhuiStr = new Date().toISOString().split('T')[0];
 
             const { error: err1 } = await _supabase.from('production_logs').insert([{ 
-                sacs, reelles, casses, type: parseInt(type), paie: paieNette, prime_transport: primeTransport 
+                sacs, reelles, casses, type: parseInt(type), paie: paieNette, prime_transport: primeTransport, date_session: aujourdhuiStr 
             }]);
             
             const { error: err2 } = await _supabase.from('stocks').update({ ciment: newCiment, p15: newP15, p20: newP20 }).eq('id', 1);
@@ -1001,6 +1018,7 @@
             const qte = parseInt(document.getElementById('sable-qte-input').value) || 1;
             const camionInfo = document.getElementById('sable-camion-input').value || "已送达采购车";
             const total = prixUnit * qte;
+            const aujourdhuiStr = new Date().toISOString().split('T')[0];
 
             const nouveauStockSable = (Number(state.stocks.sable) || 0) + qte;
 
@@ -1009,7 +1027,8 @@
                 prix_unitaire: prixUnit,
                 quantite: qte,
                 montant_total: total,
-                camion_info: camionInfo
+                camion_info: camionInfo,
+                date_achat: aujourdhuiStr
             }]);
 
             const { error: err2 } = await _supabase.from('stocks').update({ sable: nouveauStockSable }).eq('id', 1);
@@ -1103,6 +1122,7 @@
             const total = qte * prixUnitLivré;
             // 自动计算装车工佣金：10 FCFA / 块
             const commissionChargeurs = qte * 10;
+            const aujourdhuiStr = new Date().toISOString().split('T')[0];
 
             const nouvelleVente = {
                 client, 
@@ -1113,7 +1133,8 @@
                 total: total, 
                 avance, 
                 reste: total - avance,
-                commission_chargeurs: commissionChargeurs
+                commission_chargeurs: commissionChargeurs,
+                date_vente: aujourdhuiStr
             };
 
             const newP15 = type === "15" ? Math.max(0, state.stocks.p15 - qte) : state.stocks.p15;
@@ -1139,9 +1160,55 @@
             await loadDataFromSupabase();
         }
 
-        function renderHistorique() {
+        // --- 核心更新：带时间段与文本搜索的多条件销售历史过滤函数 ---
+        function filterHistorique() {
+            const query = document.getElementById('search-client').value.toLowerCase();
+            const periode = document.getElementById('filter-periode').value;
+            const customDate = document.getElementById('filter-custom-date').value;
+            
+            // 联动控制自定义日期选择器的显示状态
+            const customDateInput = document.getElementById('filter-custom-date');
+            if (periode === 'custom') {
+                customDateInput.classList.remove('hidden');
+            } else {
+                customDateInput.classList.add('hidden');
+            }
+
+            const aujourdhui = new Date().toISOString().split('T')[0];
+            
+            // 计算昨天的日期字符串
+            const dHier = new Date();
+            dHier.setDate(dHier.getDate() - 1);
+            const hierStr = dHier.toISOString().split('T')[0];
+
+            // 计算本周起始日期 (以星期一为起点)
+            const dSemaine = new Date();
+            const day = dSemaine.getDay();
+            const diff = dSemaine.getDate() - day + (day === 0 ? -6 : 1);
+            const debutSemaine = new Date(dSemaine.setDate(diff)).toISOString().split('T')[0];
+
+            // 本月前缀 (如 "2026-10")
+            const moisCourant = aujourdhui.slice(0, 7);
+
+            const filtered = state.ventes.filter(v => {
+                const dateVente = v.date_vente || (v.created_at ? v.created_at.split('T')[0] : '');
+                
+                // 1. 文本关键字匹配 (客户名或车牌)
+                const matchQuery = v.client.toLowerCase().includes(query) || v.camion.toLowerCase().includes(query);
+                if (!matchQuery) return false;
+
+                // 2. 时间段过滤条件匹配
+                if (periode === 'aujourdhui') return dateVente === aujourdhui;
+                if (periode === 'hier') return dateVente === hierStr;
+                if (periode === 'semaine') return dateVente >= debutSemaine && dateVente <= aujourdhui;
+                if (periode === 'mois') return dateVente.startsWith(moisCourant);
+                if (periode === 'custom' && customDate) return dateVente === customDate;
+
+                return true; // "tous" (全部时间)
+            });
+
             const table = document.getElementById('table-historique');
-            table.innerHTML = state.ventes.map(v => `
+            table.innerHTML = filtered.map(v => `
                 <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition">
                     <td class="p-3.5 text-[10px] text-slate-400 font-bold">${v.date_vente || ''}</td>
                     <td class="p-3.5">
@@ -1302,38 +1369,6 @@
         function reimprimer(id) {
             const v = state.ventes.find(v => v.id === id);
             if(v) lancerImpressionFacture(v);
-        }
-
-        function filterHistorique() {
-            const query = document.getElementById('search-client').value.toLowerCase();
-            const filtered = state.ventes.filter(v => v.client.toLowerCase().includes(query) || v.camion.toLowerCase().includes(query));
-            const table = document.getElementById('table-historique');
-            table.innerHTML = filtered.map(v => `
-                <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition">
-                    <td class="p-3.5 text-[10px] text-slate-400 font-bold">${v.date_vente || ''}</td>
-                    <td class="p-3.5">
-                        <div class="font-black text-slate-800 text-xs sm:text-sm">${v.client}</div>
-                        <div class="text-[10px] text-slate-400 italic">${v.camion}</div>
-                    </td>
-                    <td class="p-3.5 text-center font-bold text-slate-600 text-xs">${v.qte} (${v.type}#)</td>
-                    <td class="p-3.5 text-right font-black text-slate-900 text-xs sm:text-sm">${v.total.toLocaleString()} F</td>
-                    <td class="p-3.5 text-right font-black text-xs sm:text-sm ${v.reste > 0 ? 'text-red-500' : 'text-emerald-500'}">
-                        ${v.reste.toLocaleString()} F
-                    </td>
-                    <td class="p-3.5 text-center flex items-center justify-center space-x-1">
-                        ${v.reste > 0 ? `
-                            <button onclick="ouvrirModalReglement(${v.id})" class="px-2.5 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-lg text-[10px] font-black uppercase tracking-wider transition flex items-center space-x-1" title="补交尾款">
-                                <i class="fas fa-hand-holding-dollar text-xs"></i>
-                                <span>结算</span>
-                            </button>
-                        ` : `
-                            <span class="px-2 py-1 bg-slate-100 text-slate-400 rounded-lg text-[9px] font-bold uppercase">已结清</span>
-                        `}
-                        <button onclick="reimprimer(${v.id})" class="text-blue-600 hover:text-blue-800 p-1.5 rounded-lg hover:bg-blue-50 transition" title="重新打印"><i class="fas fa-print"></i></button>
-                        <button onclick="supprimerVente(${v.id})" class="text-slate-300 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition" title="删除"><i class="fas fa-trash text-xs"></i></button>
-                    </td>
-                </tr>
-            `).join('');
         }
 
         function renderDashboard() {
